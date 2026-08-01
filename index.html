@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <title>הרשמה למשחק כדורסל</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --success: #16a34a;
+      --danger: #dc2626;
+      --warning: #d97706;
+      --bg: #f1f5f9;
+      --card: #ffffff;
+      --text: #0f172a;
+      --text-secondary: #64748b;
+      --border: #e2e8f0;
+      --radius: 16px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.4;
+      min-height: 100vh;
+      padding-bottom: 40px;
+    }
+
+    .header {
+      background: var(--primary);
+      color: white;
+      padding: 16px 20px 18px;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+    }
+
+    .header h1 { font-size: 1.2rem; font-weight: 700; text-align: center; }
+    .game-info { text-align: center; font-size: 0.85rem; opacity: 0.9; margin-top: 4px; }
+
+    .container { padding: 16px 14px 24px; max-width: 480px; margin: 0 auto; }
+
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 18px 16px;
+      margin-bottom: 14px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+
+    .card h3 { font-size: 0.95rem; font-weight: 600; margin-bottom: 14px; }
+
+    .list { display: flex; flex-direction: column; gap: 8px; }
+
+    .list-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #f8fafc;
+      border-radius: 12px;
+      padding: 13px 14px;
+      font-size: 0.97rem;
+    }
+
+    .list-item .name { flex: 1; text-align: right; padding-left: 10px; }
+    .list-item .num { font-weight: 700; color: var(--primary); min-width: 28px; text-align: left; }
+
+    .empty { text-align: center; color: var(--text-secondary); padding: 20px 10px; font-size: 0.92rem; }
+    .free-spots { text-align: center; margin-top: 14px; font-size: 0.87rem; color: var(--text-secondary); font-weight: 500; }
+
+    .form-group { margin-bottom: 12px; }
+
+    input[type="text"], input[type="password"] {
+      width: 100%;
+      padding: 14px 16px;
+      font-size: 1rem;
+      border: 1.5px solid var(--border);
+      border-radius: 14px;
+      background: #fff;
+    }
+
+    input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,0.12); }
+
+    button {
+      width: 100%;
+      padding: 15px;
+      font-size: 1rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 14px;
+      cursor: pointer;
+    }
+
+    button:active { transform: scale(0.97); }
+
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-secondary { background: var(--success); color: white; }
+    .btn-danger { background: var(--danger); color: white; }
+    .btn-gray { background: #e2e8f0; color: var(--text); }
+    .btn-admin { background: var(--warning); color: white; }
+
+    .message {
+      padding: 13px 16px;
+      border-radius: 14px;
+      margin-bottom: 14px;
+      text-align: center;
+      font-weight: 500;
+      font-size: 0.93rem;
+    }
+
+    .success { background: #dcfce7; color: #166534; }
+    .error { background: #fee2e2; color: #991b1b; }
+    .hidden { display: none !important; }
+
+    .status-text { text-align: center; font-size: 0.84rem; color: var(--text-secondary); margin-top: 12px; }
+
+    .checkbox-item { padding: 12px 0; border-bottom: 1px solid #f1f5f9; }
+    .checkbox-item:last-child { border-bottom: none; }
+    .checkbox-item label { display: flex; align-items: center; gap: 12px; font-size: 0.96rem; cursor: pointer; }
+    .checkbox-item input { width: 20px; height: 20px; accent-color: var(--primary); }
+
+    .admin-section { background: #fffbeb; border: 1.5px dashed #f59e0b; }
+    .admin-section h3 { color: #b45309; }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <h1>הרשמה למשחק כדורסל</h1>
+    <div class="game-info" id="gameInfo">טוען...</div>
+  </div>
+
+  <div class="container">
+    <div id="message" class="message hidden"></div>
+
+    <div class="card">
+      <h3>רשימת המשחק</h3>
+      <div class="list" id="mainList"><div class="empty">טוען...</div></div>
+      <div class="free-spots" id="freeSpots"></div>
+    </div>
+
+    <div class="card">
+      <h3>רשימת המתנה</h3>
+      <div class="list" id="waitlist"><div class="empty">טוען...</div></div>
+    </div>
+
+    <div class="card">
+      <h3>הרשמה</h3>
+      <div class="form-group">
+        <input type="text" id="selfTz" placeholder="תעודת זהות שלך" inputmode="numeric">
+      </div>
+      <button class="btn-primary" onclick="doRegisterSelf()">הרשמה</button>
+    </div>
+
+    <div class="card" id="friendCard">
+      <h3>הרשמת חבר</h3>
+      <div class="form-group">
+        <input type="text" id="registrarTz" placeholder="תעודת זהות שלך (הרושם)" inputmode="numeric">
+      </div>
+      <div class="form-group">
+        <input type="text" id="friendName" placeholder="שם החבר">
+      </div>
+      <button class="btn-secondary" onclick="doRegisterFriend()">הרשמת חבר</button>
+      <div class="status-text" id="friendStatus"></div>
+    </div>
+
+    <div class="card">
+      <h3>ביטול הרשמה</h3>
+      <div class="form-group">
+        <input type="text" id="cancelTz" placeholder="תעודת זהות שלך" inputmode="numeric">
+      </div>
+      <button class="btn-gray" onclick="loadMyRegs()">הצג את ההרשמות שלי</button>
+      <div id="myRegs" class="hidden" style="margin-top:14px;"></div>
+      <button class="btn-danger hidden" id="cancelBtn" onclick="doCancel()" style="margin-top:12px;">בטל נבחרים</button>
+    </div>
+
+    <div class="card admin-section">
+      <h3>ניהול (אדמין)</h3>
+      <div id="adminLogin">
+        <div class="form-group">
+          <input type="password" id="adminPassword" placeholder="סיסמת אדמין">
+        </div>
+        <button class="btn-admin" onclick="checkAdminPassword()">כניסה לניהול</button>
+      </div>
+      <div id="adminPanel" class="hidden">
+        <p class="status-text" style="margin-bottom:12px;">מחובר כאדמין</p>
+        <button class="btn-admin" onclick="doStartNewWeek()">התחל שבוע חדש</button>
+        <button class="btn-gray" onclick="logoutAdmin()" style="margin-top:10px;">יציאה מניהול</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ========== כתובת ה-Backend שלך ==========
+    const API_URL = "https://script.google.com/macros/s/AKfycbwHjO-9g6p7LTmqxlxLYj4MauHU7bAKRo8besfK-OHKY3FUP5M3P_hxZr9Zgj6MiNdK/exec";
+
+    async function apiCall(action, params = {}) {
+      const body = new URLSearchParams({ action, ...params });
+      const res = await fetch(API_URL, {
+        method: "POST",
+        body: body
+      });
+      return await res.json();
+    }
+
+    function showMessage(text, isSuccess) {
+      const el = document.getElementById("message");
+      el.textContent = text;
+      el.className = "message " + (isSuccess ? "success" : "error");
+      el.classList.remove("hidden");
+      setTimeout(() => el.classList.add("hidden"), 4500);
+    }
+
+    async function refreshList() {
+      try {
+        const data = await apiCall("getPublicList");
+        
+        if (data.error) {
+          document.getElementById("gameInfo").textContent = data.error;
+          document.getElementById("mainList").innerHTML = `<div class="empty">${data.error}</div>`;
+          document.getElementById("waitlist").innerHTML = "";
+          document.getElementById("freeSpots").textContent = "";
+          return;
+        }
+
+        document.getElementById("gameInfo").textContent = 
+          `משחק בתאריך ${data.gameDate}` + (data.isLocked ? " • ההרשמה סגורה" : "");
+
+        if (data.main && data.main.length) {
+          document.getElementById("mainList").innerHTML = data.main.map(r => 
+            `<div class="list-item"><span class="name">${r.display}</span><span class="num">${r.position}.</span></div>`
+          ).join("");
+        } else {
+          document.getElementById("mainList").innerHTML = `<div class="empty">אין נרשמים עדיין</div>`;
+        }
+
+        if (data.waitlist && data.waitlist.length) {
+          document.getElementById("waitlist").innerHTML = data.waitlist.map(r => 
+            `<div class="list-item"><span class="name">${r.display}</span><span class="num">${r.position}.</span></div>`
+          ).join("");
+        } else {
+          document.getElementById("waitlist").innerHTML = `<div class="empty">רשימת המתנה ריקה</div>`;
+        }
+
+        document.getElementById("freeSpots").textContent = 
+          `מקומות פנויים: ${data.freeSpots} מתוך ${data.maxPlayers}`;
+
+        const friendCard = document.getElementById("friendCard");
+        if (data.friendRegistrationOpen) {
+          document.getElementById("friendStatus").textContent = "✓ הרשמת חברים פתוחה";
+          friendCard.style.opacity = "1";
+        } else {
+          document.getElementById("friendStatus").textContent = data.isLocked 
+            ? "ההרשמה נסגרה" 
+            : "הרשמת חברים נפתחת ביום שישי ב-12:00";
+          friendCard.style.opacity = "0.78";
+        }
+      } catch (err) {
+        showMessage("שגיאה בטעינת הרשימה", false);
+      }
+    }
+
+    async function doRegisterSelf() {
+      const tz = document.getElementById("selfTz").value.trim();
+      if (!tz) return showMessage("נא להזין תעודת זהות", false);
+
+      const res = await apiCall("registerSelf", { tz });
+      showMessage(res.message, res.success);
+      if (res.success) {
+        document.getElementById("selfTz").value = "";
+        refreshList();
+      }
+    }
+
+    async function doRegisterFriend() {
+      const registrarTz = document.getElementById("registrarTz").value.trim();
+      const friendName = document.getElementById("friendName").value.trim();
+      if (!registrarTz || !friendName) return showMessage("נא למלא את כל השדות", false);
+
+      const res = await apiCall("registerFriend", { registrarTz, friendName });
+      showMessage(res.message, res.success);
+      if (res.success) {
+        document.getElementById("friendName").value = "";
+        refreshList();
+      }
+    }
+
+    async function loadMyRegs() {
+      const tz = document.getElementById("cancelTz").value.trim();
+      if (!tz) return showMessage("נא להזין תעודת זהות", false);
+
+      const list = await apiCall("getMyRegistrations", { tz });
+      const container = document.getElementById("myRegs");
+
+      if (!list || list.length === 0) {
+        container.innerHTML = `<div class="empty">לא נמצאו הרשמות</div>`;
+        document.getElementById("cancelBtn").classList.add("hidden");
+      } else {
+        container.innerHTML = list.map(r => 
+          `<div class="checkbox-item">
+            <label>
+              <input type="checkbox" value="${r.id}">
+              <span>${r.display}</span>
+            </label>
+          </div>`
+        ).join("");
+        document.getElementById("cancelBtn").classList.remove("hidden");
+      }
+      container.classList.remove("hidden");
+    }
+
+    async function doCancel() {
+      const tz = document.getElementById("cancelTz").value.trim();
+      const checked = [...document.querySelectorAll("#myRegs input:checked")].map(c => c.value);
+      if (checked.length === 0) return showMessage("נא לבחור לפחות הרשמה אחת", false);
+
+      const res = await apiCall("cancelRegistrations", { tz, ids: checked.join(",") });
+      showMessage(res.message, res.success);
+      if (res.success) {
+        document.getElementById("myRegs").classList.add("hidden");
+        document.getElementById("cancelBtn").classList.add("hidden");
+        refreshList();
+      }
+    }
+
+    function checkAdminPassword() {
+      const password = document.getElementById("adminPassword").value;
+      if (password === "basket2026") {
+        document.getElementById("adminLogin").classList.add("hidden");
+        document.getElementById("adminPanel").classList.remove("hidden");
+        document.getElementById("adminPassword").value = "";
+      } else {
+        showMessage("סיסמה שגויה", false);
+      }
+    }
+
+    function logoutAdmin() {
+      document.getElementById("adminPanel").classList.add("hidden");
+      document.getElementById("adminLogin").classList.remove("hidden");
+    }
+
+    async function doStartNewWeek() {
+      if (!confirm("האם אתה בטוח שברצונך להתחיל שבוע חדש?\nהמשחק הקודם ייסגר והרשימה תתאפס.")) return;
+
+      const res = await apiCall("startNewWeek", { password: "basket2026" });
+      showMessage(res.message, res.success);
+      if (res.success) refreshList();
+    }
+
+    // טעינה ראשונית
+    refreshList();
+  </script>
+</body>
+</html>
