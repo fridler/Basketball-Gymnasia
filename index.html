@@ -201,14 +201,27 @@
     // ========== כתובת ה-Backend שלך ==========
     const API_URL = "https://script.google.com/macros/s/AKfycbwHjO-9g6p7LTmqxlxLYj4MauHU7bAKRo8besfK-OHKY3FUP5M3P_hxZr9Zgj6MiNdK/exec";
 
-    async function apiCall(action, params = {}) {
-      const body = new URLSearchParams({ action, ...params });
-      const res = await fetch(API_URL, {
-        method: "POST",
-        body: body
-      });
-      return await res.json();
+async function apiCall(action, params = {}) {
+  const url = new URL(API_URL);
+  url.searchParams.set("action", action);
+  
+  for (const key in params) {
+    if (params[key] !== undefined && params[key] !== null) {
+      url.searchParams.set(key, params[key]);
     }
+  }
+
+  const res = await fetch(url.toString(), {
+    method: "GET",
+    redirect: "follow"
+  });
+
+  if (!res.ok) {
+    throw new Error("שגיאת רשת");
+  }
+
+  return await res.json();
+}
 
     function showMessage(text, isSuccess) {
       const el = document.getElementById("message");
