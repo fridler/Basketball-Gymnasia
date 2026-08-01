@@ -21,7 +21,12 @@
       --radius: 16px;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -29,55 +34,141 @@
       color: var(--text);
       line-height: 1.4;
       min-height: 100vh;
-      padding-bottom: 40px;
+      padding-bottom: 80px;
     }
 
+    /* Header */
     .header {
       background: var(--primary);
       color: white;
-      padding: 16px 20px 18px;
+      padding: 14px 16px 12px;
       position: sticky;
       top: 0;
       z-index: 50;
       box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
     }
 
-    .header h1 { font-size: 1.2rem; font-weight: 700; text-align: center; }
-    .game-info { text-align: center; font-size: 0.85rem; opacity: 0.9; margin-top: 4px; }
+    .header h1 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      text-align: center;
+    }
 
-    .container { padding: 16px 14px 24px; max-width: 480px; margin: 0 auto; }
+    .game-info {
+      text-align: center;
+      font-size: 0.82rem;
+      opacity: 0.9;
+      margin-top: 3px;
+    }
 
+    /* Tabs */
+    .tabs {
+      display: flex;
+      background: white;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 62px;
+      z-index: 40;
+    }
+
+    .tab {
+      flex: 1;
+      text-align: center;
+      padding: 13px 6px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      transition: all 0.2s;
+    }
+
+    .tab.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+    }
+
+    /* Content */
+    .container {
+      padding: 14px 12px 20px;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* Card */
     .card {
       background: var(--card);
       border-radius: var(--radius);
-      padding: 18px 16px;
-      margin-bottom: 14px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      padding: 16px;
+      margin-bottom: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     }
 
-    .card h3 { font-size: 0.95rem; font-weight: 600; margin-bottom: 14px; }
+    .card h3 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
 
-    .list { display: flex; flex-direction: column; gap: 8px; }
+    /* List - מספר בצד ימין */
+    .list {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
 
     .list-item {
       display: flex;
       align-items: center;
-      justify-content: space-between;
       background: #f8fafc;
       border-radius: 12px;
-      padding: 13px 14px;
-      font-size: 0.97rem;
+      padding: 12px 14px;
+      font-size: 0.96rem;
     }
 
-    .list-item .name { flex: 1; text-align: right; padding-left: 10px; }
-    .list-item .num { font-weight: 700; color: var(--primary); min-width: 28px; text-align: left; }
+    .list-item .num {
+      font-weight: 700;
+      color: var(--primary);
+      min-width: 28px;
+      margin-left: 10px;
+      text-align: right;
+    }
 
-    .empty { text-align: center; color: var(--text-secondary); padding: 20px 10px; font-size: 0.92rem; }
-    .free-spots { text-align: center; margin-top: 14px; font-size: 0.87rem; color: var(--text-secondary); font-weight: 500; }
+    .list-item .name {
+      flex: 1;
+      text-align: right;
+    }
 
-    .form-group { margin-bottom: 12px; }
+    .empty {
+      text-align: center;
+      color: var(--text-secondary);
+      padding: 22px 10px;
+      font-size: 0.92rem;
+    }
 
-    input[type="text"], input[type="password"] {
+    .free-spots {
+      text-align: center;
+      margin-top: 12px;
+      font-size: 0.86rem;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    /* Forms */
+    .form-group {
+      margin-bottom: 11px;
+    }
+
+    input[type="text"],
+    input[type="password"] {
       width: 100%;
       padding: 14px 16px;
       font-size: 1rem;
@@ -86,11 +177,16 @@
       background: #fff;
     }
 
-    input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,0.12); }
+    input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+    }
 
+    /* Buttons */
     button {
       width: 100%;
-      padding: 15px;
+      padding: 14px;
       font-size: 1rem;
       font-weight: 600;
       border: none;
@@ -98,7 +194,9 @@
       cursor: pointer;
     }
 
-    button:active { transform: scale(0.97); }
+    button:active {
+      transform: scale(0.97);
+    }
 
     .btn-primary { background: var(--primary); color: white; }
     .btn-secondary { background: var(--success); color: white; }
@@ -106,28 +204,60 @@
     .btn-gray { background: #e2e8f0; color: var(--text); }
     .btn-admin { background: var(--warning); color: white; }
 
+    /* Messages */
     .message {
-      padding: 13px 16px;
+      padding: 12px 16px;
       border-radius: 14px;
-      margin-bottom: 14px;
+      margin-bottom: 12px;
       text-align: center;
       font-weight: 500;
-      font-size: 0.93rem;
+      font-size: 0.92rem;
     }
 
     .success { background: #dcfce7; color: #166534; }
     .error { background: #fee2e2; color: #991b1b; }
     .hidden { display: none !important; }
 
-    .status-text { text-align: center; font-size: 0.84rem; color: var(--text-secondary); margin-top: 12px; }
+    .status-text {
+      text-align: center;
+      font-size: 0.84rem;
+      color: var(--text-secondary);
+      margin-top: 10px;
+    }
 
-    .checkbox-item { padding: 12px 0; border-bottom: 1px solid #f1f5f9; }
-    .checkbox-item:last-child { border-bottom: none; }
-    .checkbox-item label { display: flex; align-items: center; gap: 12px; font-size: 0.96rem; cursor: pointer; }
-    .checkbox-item input { width: 20px; height: 20px; accent-color: var(--primary); }
+    /* Checkboxes */
+    .checkbox-item {
+      padding: 11px 0;
+      border-bottom: 1px solid #f1f5f9;
+    }
 
-    .admin-section { background: #fffbeb; border: 1.5px dashed #f59e0b; }
-    .admin-section h3 { color: #b45309; }
+    .checkbox-item:last-child {
+      border-bottom: none;
+    }
+
+    .checkbox-item label {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.96rem;
+      cursor: pointer;
+    }
+
+    .checkbox-item input {
+      width: 20px;
+      height: 20px;
+      accent-color: var(--primary);
+    }
+
+    /* Admin */
+    .admin-section {
+      background: #fffbeb;
+      border: 1.5px dashed #f59e0b;
+    }
+
+    .admin-section h3 {
+      color: #b45309;
+    }
   </style>
 </head>
 <body>
@@ -137,91 +267,130 @@
     <div class="game-info" id="gameInfo">טוען...</div>
   </div>
 
+  <!-- Tabs -->
+  <div class="tabs">
+    <div class="tab active" data-tab="list" onclick="switchTab('list')">רשימה</div>
+    <div class="tab" data-tab="register" onclick="switchTab('register')">הרשמה</div>
+    <div class="tab" data-tab="cancel" onclick="switchTab('cancel')">ביטול</div>
+    <div class="tab" data-tab="admin" onclick="switchTab('admin')">ניהול</div>
+  </div>
+
   <div class="container">
     <div id="message" class="message hidden"></div>
 
-    <div class="card">
-      <h3>רשימת המשחק</h3>
-      <div class="list" id="mainList"><div class="empty">טוען...</div></div>
-      <div class="free-spots" id="freeSpots"></div>
-    </div>
-
-    <div class="card">
-      <h3>רשימת המתנה</h3>
-      <div class="list" id="waitlist"><div class="empty">טוען...</div></div>
-    </div>
-
-    <div class="card">
-      <h3>הרשמה</h3>
-      <div class="form-group">
-        <input type="text" id="selfTz" placeholder="תעודת זהות שלך" inputmode="numeric">
-      </div>
-      <button class="btn-primary" onclick="doRegisterSelf()">הרשמה</button>
-    </div>
-
-    <div class="card" id="friendCard">
-      <h3>הרשמת חבר</h3>
-      <div class="form-group">
-        <input type="text" id="registrarTz" placeholder="תעודת זהות שלך (הרושם)" inputmode="numeric">
-      </div>
-      <div class="form-group">
-        <input type="text" id="friendName" placeholder="שם החבר">
-      </div>
-      <button class="btn-secondary" onclick="doRegisterFriend()">הרשמת חבר</button>
-      <div class="status-text" id="friendStatus"></div>
-    </div>
-
-    <div class="card">
-      <h3>ביטול הרשמה</h3>
-      <div class="form-group">
-        <input type="text" id="cancelTz" placeholder="תעודת זהות שלך" inputmode="numeric">
-      </div>
-      <button class="btn-gray" onclick="loadMyRegs()">הצג את ההרשמות שלי</button>
-      <div id="myRegs" class="hidden" style="margin-top:14px;"></div>
-      <button class="btn-danger hidden" id="cancelBtn" onclick="doCancel()" style="margin-top:12px;">בטל נבחרים</button>
-    </div>
-
-    <div class="card admin-section">
-      <h3>ניהול (אדמין)</h3>
-      <div id="adminLogin">
-        <div class="form-group">
-          <input type="password" id="adminPassword" placeholder="סיסמת אדמין">
+    <!-- טאב רשימה -->
+    <div id="tab-list" class="tab-content active">
+      <div class="card">
+        <h3>רשימת המשחק</h3>
+        <div class="list" id="mainList">
+          <div class="empty">טוען...</div>
         </div>
-        <button class="btn-admin" onclick="checkAdminPassword()">כניסה לניהול</button>
+        <div class="free-spots" id="freeSpots"></div>
       </div>
-      <div id="adminPanel" class="hidden">
-        <p class="status-text" style="margin-bottom:12px;">מחובר כאדמין</p>
-        <button class="btn-admin" onclick="doStartNewWeek()">התחל שבוע חדש</button>
-        <button class="btn-gray" onclick="logoutAdmin()" style="margin-top:10px;">יציאה מניהול</button>
+
+      <div class="card">
+        <h3>רשימת המתנה</h3>
+        <div class="list" id="waitlist">
+          <div class="empty">טוען...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- טאב הרשמה -->
+    <div id="tab-register" class="tab-content">
+      <div class="card">
+        <h3>הרשמה</h3>
+        <div class="form-group">
+          <input type="text" id="selfTz" placeholder="תעודת זהות שלך" inputmode="numeric">
+        </div>
+        <button class="btn-primary" onclick="doRegisterSelf()">הרשמה</button>
+      </div>
+
+      <div class="card" id="friendCard">
+        <h3>הרשמת חבר</h3>
+        <div class="form-group">
+          <input type="text" id="registrarTz" placeholder="תעודת זהות שלך (הרושם)" inputmode="numeric">
+        </div>
+        <div class="form-group">
+          <input type="text" id="friendName" placeholder="שם החבר">
+        </div>
+        <button class="btn-secondary" onclick="doRegisterFriend()">הרשמת חבר</button>
+        <div class="status-text" id="friendStatus"></div>
+      </div>
+    </div>
+
+    <!-- טאב ביטול -->
+    <div id="tab-cancel" class="tab-content">
+      <div class="card">
+        <h3>ביטול הרשמה</h3>
+        <div class="form-group">
+          <input type="text" id="cancelTz" placeholder="תעודת זהות שלך" inputmode="numeric">
+        </div>
+        <button class="btn-gray" onclick="loadMyRegs()">הצג את ההרשמות שלי</button>
+        
+        <div id="myRegs" class="hidden" style="margin-top: 14px;"></div>
+        <button class="btn-danger hidden" id="cancelBtn" onclick="doCancel()" style="margin-top: 12px;">בטל נבחרים</button>
+      </div>
+    </div>
+
+    <!-- טאב ניהול -->
+    <div id="tab-admin" class="tab-content">
+      <div class="card admin-section">
+        <h3>ניהול (אדמין)</h3>
+        
+        <div id="adminLogin">
+          <div class="form-group">
+            <input type="password" id="adminPassword" placeholder="סיסמת אדמין">
+          </div>
+          <button class="btn-admin" onclick="checkAdminPassword()">כניסה לניהול</button>
+        </div>
+
+        <div id="adminPanel" class="hidden">
+          <p class="status-text" style="margin-bottom: 12px;">מחובר כאדמין</p>
+          <button class="btn-admin" onclick="doStartNewWeek()">התחל שבוע חדש</button>
+          <button class="btn-gray" onclick="logoutAdmin()" style="margin-top: 10px;">יציאה מניהול</button>
+        </div>
       </div>
     </div>
   </div>
 
   <script>
-    // ========== כתובת ה-Backend שלך ==========
     const API_URL = "https://script.google.com/macros/s/AKfycbyR5Y7da_NRL20jCD0hZv7Vy1uv5fosBcuXNMe-egr2-wrdayiYzjixOxSAft9o0BqI/exec";
 
-async function apiCall(action, params = {}) {
-  const url = new URL(API_URL);
-  url.searchParams.set("action", action);
-  
-  for (const key in params) {
-    if (params[key] !== undefined && params[key] !== null) {
-      url.searchParams.set(key, params[key]);
+    async function apiCall(action, params = {}) {
+      const url = new URL(API_URL);
+      url.searchParams.set("action", action);
+      
+      for (const key in params) {
+        if (params[key] !== undefined && params[key] !== null) {
+          url.searchParams.set(key, params[key]);
+        }
+      }
+
+      const res = await fetch(url.toString(), {
+        method: "GET",
+        redirect: "follow",
+        mode: "cors"
+      });
+
+      const text = await res.text();
+      try {
+        return JSON.parse(text);
+      } catch (e) {
+        console.error("Response was not JSON:", text);
+        throw new Error("תשובה לא תקינה מהשרת");
+      }
     }
-  }
 
-  const res = await fetch(url.toString(), {
-    method: "GET",
-    redirect: "follow"
-  });
+    function switchTab(tabName) {
+      // הסרת active מכל הטאבים
+      document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+      document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
 
-  if (!res.ok) {
-    throw new Error("שגיאת רשת");
-  }
-
-  return await res.json();
-}
+      // הוספת active לטאב הנבחר
+      document.querySelector(`.tab[data-tab="${tabName}"]`).classList.add("active");
+      document.getElementById(`tab-${tabName}`).classList.add("active");
+    }
 
     function showMessage(text, isSuccess) {
       const el = document.getElementById("message");
@@ -246,17 +415,25 @@ async function apiCall(action, params = {}) {
         document.getElementById("gameInfo").textContent = 
           `משחק בתאריך ${data.gameDate}` + (data.isLocked ? " • ההרשמה סגורה" : "");
 
+        // Main - מספר בצד ימין
         if (data.main && data.main.length) {
           document.getElementById("mainList").innerHTML = data.main.map(r => 
-            `<div class="list-item"><span class="name">${r.display}</span><span class="num">${r.position}.</span></div>`
+            `<div class="list-item">
+              <span class="num">${r.position}.</span>
+              <span class="name">${r.display}</span>
+            </div>`
           ).join("");
         } else {
           document.getElementById("mainList").innerHTML = `<div class="empty">אין נרשמים עדיין</div>`;
         }
 
+        // Waitlist
         if (data.waitlist && data.waitlist.length) {
           document.getElementById("waitlist").innerHTML = data.waitlist.map(r => 
-            `<div class="list-item"><span class="name">${r.display}</span><span class="num">${r.position}.</span></div>`
+            `<div class="list-item">
+              <span class="num">${r.position}.</span>
+              <span class="name">${r.display}</span>
+            </div>`
           ).join("");
         } else {
           document.getElementById("waitlist").innerHTML = `<div class="empty">רשימת המתנה ריקה</div>`;
@@ -265,6 +442,7 @@ async function apiCall(action, params = {}) {
         document.getElementById("freeSpots").textContent = 
           `מקומות פנויים: ${data.freeSpots} מתוך ${data.maxPlayers}`;
 
+        // Friend status
         const friendCard = document.getElementById("friendCard");
         if (data.friendRegistrationOpen) {
           document.getElementById("friendStatus").textContent = "✓ הרשמת חברים פתוחה";
@@ -276,6 +454,7 @@ async function apiCall(action, params = {}) {
           friendCard.style.opacity = "0.78";
         }
       } catch (err) {
+        console.error(err);
         showMessage("שגיאה בטעינת הרשימה", false);
       }
     }
@@ -289,6 +468,7 @@ async function apiCall(action, params = {}) {
       if (res.success) {
         document.getElementById("selfTz").value = "";
         refreshList();
+        switchTab("list");
       }
     }
 
@@ -302,6 +482,7 @@ async function apiCall(action, params = {}) {
       if (res.success) {
         document.getElementById("friendName").value = "";
         refreshList();
+        switchTab("list");
       }
     }
 
@@ -340,6 +521,7 @@ async function apiCall(action, params = {}) {
         document.getElementById("myRegs").classList.add("hidden");
         document.getElementById("cancelBtn").classList.add("hidden");
         refreshList();
+        switchTab("list");
       }
     }
 
@@ -364,10 +546,13 @@ async function apiCall(action, params = {}) {
 
       const res = await apiCall("startNewWeek", { password: "basket2026" });
       showMessage(res.message, res.success);
-      if (res.success) refreshList();
+      if (res.success) {
+        refreshList();
+        switchTab("list");
+      }
     }
 
-    // טעינה ראשונית
+    // Init
     refreshList();
   </script>
 </body>
