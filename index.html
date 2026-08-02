@@ -201,11 +201,6 @@
       font-size: 1.05rem;
     }
 
-    .payment-icon {
-      width: 22px;
-      height: 22px;
-    }
-
     .message {
       padding: 12px 16px;
       border-radius: 14px;
@@ -260,6 +255,24 @@
       color: var(--text-secondary);
       margin-bottom: 16px;
       line-height: 1.5;
+    }
+
+    .admin-list-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid #f1f5f9;
+      font-size: 0.95rem;
+    }
+
+    .admin-list-item button {
+      width: auto;
+      padding: 6px 12px;
+      font-size: 0.85rem;
+      background: var(--danger);
+      color: white;
+      border-radius: 8px;
     }
   </style>
 </head>
@@ -348,18 +361,10 @@
         </p>
 
         <button class="btn-bit" onclick="openBit()" style="margin-bottom: 12px;">
-          <svg class="payment-icon" viewBox="0 0 24 24" fill="currentColor">
-            <circle cx="12" cy="12" r="10" fill="white"/>
-            <text x="12" y="16" text-anchor="middle" font-size="9" fill="#00a3e0" font-weight="bold">Bit</text>
-          </svg>
           שלם עם Bit
         </button>
 
         <button class="btn-paybox" onclick="openPayBox()">
-          <svg class="payment-icon" viewBox="0 0 24 24" fill="currentColor">
-            <rect x="2" y="4" width="20" height="16" rx="3" fill="white"/>
-            <text x="12" y="15" text-anchor="middle" font-size="7" fill="#6b21a8" font-weight="bold">PayBox</text>
-          </svg>
           שלם עם PayBox
         </button>
       </div>
@@ -378,21 +383,41 @@
         </div>
 
         <div id="adminPanel" class="hidden">
-          <p class="status-text" style="margin-bottom: 12px;">מחובר כאדמין</p>
-          <button class="btn-admin" onclick="doStartNewWeek()">התחל שבוע חדש</button>
-          <button class="btn-gray" onclick="logoutAdmin()" style="margin-top: 10px;">יציאה מניהול</button>
+          <p class="status-text" style="margin-bottom: 14px;">מחובר כאדמין</p>
+
+          <button class="btn-admin" onclick="doStartNewWeek()" style="margin-bottom: 12px;">התחל שבוע חדש</button>
+
+          <hr style="margin: 16px 0; border: none; border-top: 1px solid #f0e0c0;">
+
+          <h3 style="font-size: 0.95rem; margin-bottom: 10px;">הוספת שחקן ידנית</h3>
+          <div class="form-group">
+            <input type="text" id="adminAddName" placeholder="שם השחקן">
+          </div>
+          <div class="form-group">
+            <input type="text" id="adminAddTz" placeholder="ת.ז (אופציונלי)">
+          </div>
+          <button class="btn-secondary" onclick="adminAddPlayer()" style="margin-bottom: 16px;">הוסף שחקן</button>
+
+          <h3 style="font-size: 0.95rem; margin-bottom: 10px;">הסרת שחקן</h3>
+          <div id="adminRemoveList">
+            <div class="empty">לחץ "רענן רשימה" כדי לטעון</div>
+          </div>
+          <button class="btn-gray" onclick="loadAdminList()" style="margin-top: 10px;">רענן רשימה להסרה</button>
+
+          <button class="btn-gray" onclick="logoutAdmin()" style="margin-top: 20px;">יציאה מניהול</button>
         </div>
       </div>
     </div>
   </div>
 
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbxtC3uGR0Do0QABqFa651lLfXChQG1-UvPc594IYalxqiQlZOFd-C-TyGSUMeEc1F0D/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbzP7R-5Oo36uHaxgZmBCn9zKZatRwnrPa96KOhrCS5bDePUQdxhKsADAYJtA2EhMJES/exec";
 
     const BIT_LINK = "https://www.bitpay.co.il/app/me/D7A3DB5C-DC61-6CB6-1BEE-704CFF19E3C575A1";
     const PAYBOX_LINK = "https://links.payboxapp.com/vSPdR24KLUb";
 
     let lastListData = null;
+    let adminPassword = ""; // נשמר רק בזיכרון אחרי התחברות מוצלחת
 
     async function apiCall(action, params = {}) {
       const url = new URL(API_URL);
@@ -528,12 +553,10 @@
 
     function openBit() {
       window.open(BIT_LINK, "_blank");
-      showMessage("פותח את Bit...", true);
     }
 
     function openPayBox() {
       window.open(PAYBOX_LINK, "_blank");
-      showMessage("פותח את PayBox...", true);
     }
 
     async function doRegisterSelf() {
@@ -602,30 +625,100 @@
       }
     }
 
-    function checkAdminPassword() {
-      const password = document.getElementById("adminPassword").value;
-      if (password === "basket2026") {
-        document.getElementById("adminLogin").classList.add("hidden");
-        document.getElementById("adminPanel").classList.remove("hidden");
-        document.getElementById("adminPassword").value = "";
-      } else {
-        showMessage("סיסמה שגויה", false);
+    // ===== Admin =====
+    async function checkAdminPassword() {
+      const password = document.getElementById("adminPassword").value.trim();
+      if (!password) return showMessage("נא להזין סיסמה", false);
+
+      // בודקים מול השרת ע"י ניסיון פעולה פשוטה
+      const res = await apiCall("getAdminList", { password });
+      if (res.success === false && res.message === "סיסמה שגויה") {
+        return showMessage("סיסמה שגויה", false);
       }
+
+      adminPassword = password;
+      document.getElementById("adminLogin").classList.add("hidden");
+      document.getElementById("adminPanel").classList.remove("hidden");
+      document.getElementById("adminPassword").value = "";
+      loadAdminList();
     }
 
     function logoutAdmin() {
+      adminPassword = "";
       document.getElementById("adminPanel").classList.add("hidden");
       document.getElementById("adminLogin").classList.remove("hidden");
     }
 
     async function doStartNewWeek() {
+      if (!adminPassword) return showMessage("יש להתחבר קודם", false);
       if (!confirm("האם אתה בטוח שברצונך להתחיל שבוע חדש?\nהמשחק הקודם ייסגר והרשימה תתאפס.")) return;
 
-      const res = await apiCall("startNewWeek", { password: "basket2026" });
+      const res = await apiCall("startNewWeek", { password: adminPassword });
       showMessage(res.message, res.success);
       if (res.success) {
         refreshList();
         switchTab("list");
+      }
+    }
+
+    async function adminAddPlayer() {
+      if (!adminPassword) return showMessage("יש להתחבר קודם", false);
+
+      const name = document.getElementById("adminAddName").value.trim();
+      const tz = document.getElementById("adminAddTz").value.trim();
+
+      if (!name) return showMessage("חובה להזין שם", false);
+
+      const res = await apiCall("adminAdd", { password: adminPassword, name, tz });
+      showMessage(res.message, res.success);
+      if (res.success) {
+        document.getElementById("adminAddName").value = "";
+        document.getElementById("adminAddTz").value = "";
+        refreshList();
+        loadAdminList();
+      }
+    }
+
+    async function loadAdminList() {
+      if (!adminPassword) return;
+
+      const data = await apiCall("getAdminList", { password: adminPassword });
+      const container = document.getElementById("adminRemoveList");
+
+      if (!data.main && !data.waitlist) {
+        container.innerHTML = `<div class="empty">אין שחקנים</div>`;
+        return;
+      }
+
+      let html = "";
+      const all = [...(data.main || []), ...(data.waitlist || [])];
+
+      if (all.length === 0) {
+        container.innerHTML = `<div class="empty">אין שחקנים ברשימה</div>`;
+        return;
+      }
+
+      all.forEach(r => {
+        html += `
+          <div class="admin-list-item">
+            <span>${r.display}</span>
+            <button onclick="adminRemovePlayer('${r.id}')">הסר</button>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+    }
+
+    async function adminRemovePlayer(regId) {
+      if (!adminPassword) return;
+      if (!confirm("להסיר את השחקן מהרשימה?")) return;
+
+      const res = await apiCall("adminRemove", { password: adminPassword, regId });
+      showMessage(res.message, res.success);
+      if (res.success) {
+        refreshList();
+        loadAdminList();
       }
     }
 
