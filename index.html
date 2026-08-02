@@ -157,7 +157,8 @@
     .form-group { margin-bottom: 11px; }
 
     input[type="text"],
-    input[type="password"] {
+    input[type="password"],
+    select {
       width: 100%;
       padding: 14px 16px;
       font-size: 1rem;
@@ -166,7 +167,7 @@
       background: #fff;
     }
 
-    input:focus {
+    input:focus, select:focus {
       outline: none;
       border-color: var(--primary);
       box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
@@ -360,11 +361,11 @@
           בחר את האפליקציה שבה תרצה לשלם:
         </p>
 
-        <button class="btn-bit" onclick="openBit()" style="margin-bottom: 12px;">
+        <button class="btn-bit" id="btnBit" onclick="openBit()" style="margin-bottom: 12px;">
           שלם עם Bit
         </button>
 
-        <button class="btn-paybox" onclick="openPayBox()">
+        <button class="btn-paybox" id="btnPaybox" onclick="openPayBox()">
           שלם עם PayBox
         </button>
       </div>
@@ -385,22 +386,27 @@
         <div id="adminPanel" class="hidden">
           <p class="status-text" style="margin-bottom: 14px;">מחובר כאדמין</p>
 
-          <button class="btn-admin" onclick="doStartNewWeek()" style="margin-bottom: 12px;">התחל שבוע חדש</button>
+          <button class="btn-admin" onclick="doStartNewWeek()" style="margin-bottom: 16px;">התחל שבוע חדש</button>
 
           <hr style="margin: 16px 0; border: none; border-top: 1px solid #f0e0c0;">
 
-          <h3 style="font-size: 0.95rem; margin-bottom: 10px;">הוספת שחקן ידנית</h3>
+          <h3 style="font-size: 0.95rem; margin-bottom: 10px;">הוספת שחקן</h3>
+
           <div class="form-group">
-            <input type="text" id="adminAddName" placeholder="שם השחקן">
+            <select id="adminSelectPlayer" onchange="onAdminSelectChange()">
+              <option value="">-- בחר מהמאסטר --</option>
+            </select>
           </div>
+
           <div class="form-group">
-            <input type="text" id="adminAddTz" placeholder="ת.ז (אופציונלי)">
+            <input type="text" id="adminAddName" placeholder="או הזן שם חופשי (אם לא מהרשימה)">
           </div>
+
           <button class="btn-secondary" onclick="adminAddPlayer()" style="margin-bottom: 16px;">הוסף שחקן</button>
 
           <h3 style="font-size: 0.95rem; margin-bottom: 10px;">הסרת שחקן</h3>
           <div id="adminRemoveList">
-            <div class="empty">לחץ "רענן רשימה" כדי לטעון</div>
+            <div class="empty">לחץ "רענן רשימה"</div>
           </div>
           <button class="btn-gray" onclick="loadAdminList()" style="margin-top: 10px;">רענן רשימה להסרה</button>
 
@@ -411,13 +417,14 @@
   </div>
 
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbzP7R-5Oo36uHaxgZmBCn9zKZatRwnrPa96KOhrCS5bDePUQdxhKsADAYJtA2EhMJES/exec";
-
-    const BIT_LINK = "https://www.bitpay.co.il/app/me/D7A3DB5C-DC61-6CB6-1BEE-704CFF19E3C575A1";
-    const PAYBOX_LINK = "https://links.payboxapp.com/vSPdR24KLUb";
+    // ========== רק את השורה הזו צריך לעדכן אחרי Deploy חדש ==========
+    const API_URL = "https://script.google.com/macros/s/AKfycbwDm6AqkWkATba53i7rKzJ3HVP4g1kPcxeSLiBGe06z4p_OVMG1K1b9VLwzEZF4Al7Q/exec";
+    // ================================================================
 
     let lastListData = null;
-    let adminPassword = ""; // נשמר רק בזיכרון אחרי התחברות מוצלחת
+    let adminPassword = "";
+    let bitLink = "";
+    let payboxLink = "";
 
     async function apiCall(action, params = {}) {
       const url = new URL(API_URL);
@@ -447,7 +454,6 @@
     function switchTab(tabName) {
       document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
       document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
-
       document.querySelector(`.tab[data-tab="${tabName}"]`).classList.add("active");
       document.getElementById(`tab-${tabName}`).classList.add("active");
     }
@@ -464,6 +470,10 @@
       try {
         const data = await apiCall("getPublicList");
         lastListData = data;
+
+        // שמירת לינקי תשלום
+        if (data.bit_link) bitLink = data.bit_link;
+        if (data.paybox_link) payboxLink = data.paybox_link;
         
         if (data.error) {
           document.getElementById("gameInfo").textContent = data.error;
@@ -526,18 +536,14 @@
       text += `📋 רשימת המשחק:\n`;
 
       if (lastListData.main && lastListData.main.length) {
-        lastListData.main.forEach(r => {
-          text += `${r.position}. ${r.display}\n`;
-        });
+        lastListData.main.forEach(r => text += `${r.position}. ${r.display}\n`);
       } else {
         text += "אין נרשמים\n";
       }
 
       text += `\n⏳ רשימת המתנה:\n`;
       if (lastListData.waitlist && lastListData.waitlist.length) {
-        lastListData.waitlist.forEach(r => {
-          text += `${r.position}. ${r.display}\n`;
-        });
+        lastListData.waitlist.forEach(r => text += `${r.position}. ${r.display}\n`);
       } else {
         text += "ריקה\n";
       }
@@ -552,11 +558,13 @@
     }
 
     function openBit() {
-      window.open(BIT_LINK, "_blank");
+      if (bitLink) window.open(bitLink, "_blank");
+      else showMessage("לינק Bit לא מוגדר", false);
     }
 
     function openPayBox() {
-      window.open(PAYBOX_LINK, "_blank");
+      if (payboxLink) window.open(payboxLink, "_blank");
+      else showMessage("לינק PayBox לא מוגדר", false);
     }
 
     async function doRegisterSelf() {
@@ -630,16 +638,24 @@
       const password = document.getElementById("adminPassword").value.trim();
       if (!password) return showMessage("נא להזין סיסמה", false);
 
-      // בודקים מול השרת ע"י ניסיון פעולה פשוטה
-      const res = await apiCall("getAdminList", { password });
-      if (res.success === false && res.message === "סיסמה שגויה") {
-        return showMessage("סיסמה שגויה", false);
+      const res = await apiCall("getMasterList", { password });
+      if (res.success === false) {
+        return showMessage(res.message || "סיסמה שגויה", false);
       }
 
       adminPassword = password;
       document.getElementById("adminLogin").classList.add("hidden");
       document.getElementById("adminPanel").classList.remove("hidden");
       document.getElementById("adminPassword").value = "";
+
+      // מילוי ה-Select
+      const select = document.getElementById("adminSelectPlayer");
+      select.innerHTML = `<option value="">-- בחר מהמאסטר --</option>`;
+      (res.list || []).forEach(p => {
+        const symbol = p.symbol ? " " + p.symbol : "";
+        select.innerHTML += `<option value="${p.tz}|${p.name}">${p.name}${symbol}</option>`;
+      });
+
       loadAdminList();
     }
 
@@ -647,6 +663,14 @@
       adminPassword = "";
       document.getElementById("adminPanel").classList.add("hidden");
       document.getElementById("adminLogin").classList.remove("hidden");
+    }
+
+    function onAdminSelectChange() {
+      const val = document.getElementById("adminSelectPlayer").value;
+      if (val) {
+        const name = val.split("|")[1];
+        document.getElementById("adminAddName").value = name;
+      }
     }
 
     async function doStartNewWeek() {
@@ -664,16 +688,23 @@
     async function adminAddPlayer() {
       if (!adminPassword) return showMessage("יש להתחבר קודם", false);
 
-      const name = document.getElementById("adminAddName").value.trim();
-      const tz = document.getElementById("adminAddTz").value.trim();
+      const selectVal = document.getElementById("adminSelectPlayer").value;
+      let name = document.getElementById("adminAddName").value.trim();
+      let tz = "";
 
-      if (!name) return showMessage("חובה להזין שם", false);
+      if (selectVal) {
+        const parts = selectVal.split("|");
+        tz = parts[0];
+        name = parts[1];
+      }
+
+      if (!name) return showMessage("חובה לבחור מהרשימה או להזין שם", false);
 
       const res = await apiCall("adminAdd", { password: adminPassword, name, tz });
       showMessage(res.message, res.success);
       if (res.success) {
         document.getElementById("adminAddName").value = "";
-        document.getElementById("adminAddTz").value = "";
+        document.getElementById("adminSelectPlayer").value = "";
         refreshList();
         loadAdminList();
       }
@@ -685,12 +716,6 @@
       const data = await apiCall("getAdminList", { password: adminPassword });
       const container = document.getElementById("adminRemoveList");
 
-      if (!data.main && !data.waitlist) {
-        container.innerHTML = `<div class="empty">אין שחקנים</div>`;
-        return;
-      }
-
-      let html = "";
       const all = [...(data.main || []), ...(data.waitlist || [])];
 
       if (all.length === 0) {
@@ -698,16 +723,12 @@
         return;
       }
 
-      all.forEach(r => {
-        html += `
-          <div class="admin-list-item">
-            <span>${r.display}</span>
-            <button onclick="adminRemovePlayer('${r.id}')">הסר</button>
-          </div>
-        `;
-      });
-
-      container.innerHTML = html;
+      container.innerHTML = all.map(r => `
+        <div class="admin-list-item">
+          <span>${r.display}</span>
+          <button onclick="adminRemovePlayer('${r.id}')">הסר</button>
+        </div>
+      `).join("");
     }
 
     async function adminRemovePlayer(regId) {
