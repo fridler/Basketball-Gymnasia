@@ -40,12 +40,7 @@
     }
     .header h1 { font-size: 1.15rem; font-weight: 700; text-align: center; }
     .game-info { text-align: center; font-size: 0.82rem; opacity: 0.9; margin-top: 3px; }
-    .user-bar {
-      text-align: center;
-      font-size: 0.8rem;
-      opacity: 0.85;
-      margin-top: 4px;
-    }
+    .user-bar { text-align: center; font-size: 0.8rem; opacity: 0.85; margin-top: 4px; }
     .user-bar button {
       background: transparent;
       border: 1px solid rgba(255,255,255,0.5);
@@ -109,7 +104,7 @@
     .empty { text-align: center; color: var(--text-secondary); padding: 22px 10px; font-size: 0.92rem; }
     .free-spots { text-align: center; margin-top: 12px; font-size: 0.86rem; color: var(--text-secondary); font-weight: 500; }
     .form-group { margin-bottom: 11px; }
-    input[type="text"], input[type="email"], input[type="password"], select {
+    input[type="text"], input[type="email"], select {
       width: 100%;
       padding: 14px 16px;
       font-size: 1rem;
@@ -175,29 +170,31 @@
       color: white;
       border-radius: 8px;
     }
-    /* Login */
-    #loginScreen {
-      max-width: 400px;
-      margin: 40px auto;
-      padding: 0 16px;
+    .pending-item {
+      padding: 12px 0;
+      border-bottom: 1px solid #f1f5f9;
+      font-size: 0.92rem;
     }
+    .pending-item .actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .pending-item .actions button {
+      width: auto;
+      padding: 8px 14px;
+      font-size: 0.85rem;
+      border-radius: 10px;
+    }
+    #loginScreen { max-width: 400px; margin: 40px auto; padding: 0 16px; }
     .login-card {
       background: white;
       border-radius: 20px;
       padding: 28px 22px;
       box-shadow: 0 4px 20px rgba(0,0,0,0.08);
     }
-    .login-card h2 {
-      text-align: center;
-      font-size: 1.3rem;
-      margin-bottom: 8px;
-    }
-    .login-sub {
-      text-align: center;
-      color: var(--text-secondary);
-      font-size: 0.9rem;
-      margin-bottom: 24px;
-    }
+    .login-card h2 { text-align: center; font-size: 1.3rem; margin-bottom: 8px; }
+    .login-sub { text-align: center; color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 24px; }
     .divider {
       display: flex;
       align-items: center;
@@ -222,23 +219,18 @@
 </head>
 <body>
 
-  <!-- מסך התחברות -->
   <div id="loginScreen">
     <div class="login-card">
       <h2>הרשמה למשחק כדורסל</h2>
       <p class="login-sub">יש להתחבר כדי להירשם או לבטל</p>
-
       <div id="googleBtnWrap"></div>
-
       <div class="divider">או עם מייל</div>
-
       <div id="emailStep">
         <div class="form-group">
           <input type="email" id="loginEmail" placeholder="כתובת המייל שלך">
         </div>
         <button class="btn-primary" onclick="requestCode()">שלח קוד למייל</button>
       </div>
-
       <div id="codeStep" class="hidden">
         <p class="status-text" style="margin-bottom:12px;">קוד נשלח למייל. הזן אותו כאן:</p>
         <div class="form-group">
@@ -247,12 +239,10 @@
         <button class="btn-primary" onclick="verifyCode()">אימות והתחברות</button>
         <button class="btn-gray" style="margin-top:10px;" onclick="backToEmail()">חזרה</button>
       </div>
-
       <div id="loginMessage" class="message hidden" style="margin-top:14px;"></div>
     </div>
   </div>
 
-  <!-- האפליקציה -->
   <div id="appScreen" class="hidden">
     <div class="header">
       <h1>הרשמה למשחק כדורסל</h1>
@@ -325,6 +315,12 @@
         <div class="card admin-section">
           <h3>ניהול</h3>
           <button class="btn-admin" onclick="doStartNewWeek()" style="margin-bottom:16px;">התחל שבוע חדש</button>
+
+          <hr style="margin:16px 0;border:none;border-top:1px solid #f0e0c0;">
+          <h3 style="font-size:0.95rem;margin-bottom:10px;">בקשות הצטרפות ממתינות</h3>
+          <div id="pendingList"><div class="empty">טוען...</div></div>
+          <button class="btn-gray" onclick="loadPending()" style="margin-top:10px;">רענן בקשות</button>
+
           <hr style="margin:16px 0;border:none;border-top:1px solid #f0e0c0;">
           <h3 style="font-size:0.95rem;margin-bottom:10px;">הוספת שחקן</h3>
           <div class="form-group">
@@ -336,6 +332,7 @@
             <input type="text" id="adminAddName" placeholder="או הזן שם חופשי">
           </div>
           <button class="btn-secondary" onclick="adminAddPlayer()" style="margin-bottom:16px;">הוסף שחקן</button>
+
           <h3 style="font-size:0.95rem;margin-bottom:10px;">הסרת שחקן</h3>
           <div id="adminRemoveList"><div class="empty">לחץ רענן</div></div>
           <button class="btn-gray" onclick="loadAdminList()" style="margin-top:10px;">רענן רשימה להסרה</button>
@@ -345,7 +342,7 @@
   </div>
 
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbwNPYb_Z-FgGUHAn4h9jBarRRuu4eNzv3p_WCBpKZyXBQZk8ZrVUsLN610aDltcFJlt/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbx-Ze-eedlLgP5faU7Avow4XlQb3YUNzLbelYXS5UWpJ3qxBqujiYQn-A3G24BH7bKD/exec";
     const STORAGE_KEY = "basket_session_v1";
 
     let sessionToken = localStorage.getItem(STORAGE_KEY) || "";
@@ -395,6 +392,12 @@
       if (tab) tab.classList.add("active");
       const content = document.getElementById("tab-" + tabName);
       if (content) content.classList.add("active");
+
+      if (tabName === "admin" && currentUser && currentUser.isAdmin) {
+        loadMasterSelect();
+        loadAdminList();
+        loadPending();
+      }
     }
 
     function showApp() {
@@ -655,6 +658,42 @@
       if (res.success) { refreshList(); switchTab("list"); }
     }
 
+    async function loadPending() {
+      const res = await apiCall("getPendingUsers", { token: sessionToken });
+      const container = document.getElementById("pendingList");
+      if (!res.success || !res.list || !res.list.length) {
+        container.innerHTML = `<div class="empty">אין בקשות ממתינות</div>`;
+        return;
+      }
+      container.innerHTML = res.list.map(p => `
+        <div class="pending-item">
+          <div><strong>${p.name}</strong></div>
+          <div style="color:#64748b;font-size:0.85rem;">${p.email} · ${p.source} · ${p.requested_at}</div>
+          <div class="actions">
+            <button class="btn-secondary" onclick="approvePending('${p.email}', '${(p.name || '').replace(/'/g, "\\'")}')">אשר</button>
+            <button class="btn-danger" onclick="rejectPending('${p.email}')">דחה</button>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    async function approvePending(email, name) {
+      if (!confirm("לאשר את " + email + "?\nהוא יתווסף אוטומטית למאסטר.")) return;
+      const res = await apiCall("approvePending", { token: sessionToken, email, name });
+      showMessage(res.message, res.success);
+      if (res.success) {
+        loadPending();
+        loadMasterSelect();
+      }
+    }
+
+    async function rejectPending(email) {
+      if (!confirm("לדחות את " + email + "?")) return;
+      const res = await apiCall("rejectPending", { token: sessionToken, email });
+      showMessage(res.message, res.success);
+      if (res.success) loadPending();
+    }
+
     async function loadMasterSelect() {
       const res = await apiCall("getMasterList", { token: sessionToken });
       const select = document.getElementById("adminSelectPlayer");
@@ -714,16 +753,6 @@
       showMessage(res.message, res.success);
       if (res.success) { refreshList(); loadAdminList(); }
     }
-
-    // כשנכנסים לטאב ניהול – טען מאסטר
-    const origSwitch = switchTab;
-    switchTab = function(tabName) {
-      origSwitch(tabName);
-      if (tabName === "admin" && currentUser && currentUser.isAdmin) {
-        loadMasterSelect();
-        loadAdminList();
-      }
-    };
 
     bootstrap();
   </script>
