@@ -6,10 +6,10 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
   <title>הרשמה למשחק כדורסל</title>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
   <style>
     :root {
       --primary: #2563eb;
-      --primary-dark: #1d4ed8;
       --success: #16a34a;
       --danger: #dc2626;
       --warning: #d97706;
@@ -20,14 +20,7 @@
       --border: #e2e8f0;
       --radius: 16px;
     }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      -webkit-tap-highlight-color: transparent;
-    }
-
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       background: var(--bg);
@@ -36,7 +29,6 @@
       min-height: 100vh;
       padding-bottom: 80px;
     }
-
     .header {
       background: var(--primary);
       color: white;
@@ -46,30 +38,33 @@
       z-index: 50;
       box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
     }
-
-    .header h1 {
-      font-size: 1.15rem;
-      font-weight: 700;
+    .header h1 { font-size: 1.15rem; font-weight: 700; text-align: center; }
+    .game-info { text-align: center; font-size: 0.82rem; opacity: 0.9; margin-top: 3px; }
+    .user-bar {
       text-align: center;
+      font-size: 0.8rem;
+      opacity: 0.85;
+      margin-top: 4px;
     }
-
-    .game-info {
-      text-align: center;
-      font-size: 0.82rem;
-      opacity: 0.9;
-      margin-top: 3px;
+    .user-bar button {
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.5);
+      color: white;
+      padding: 2px 10px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      width: auto;
+      margin-right: 8px;
     }
-
     .tabs {
       display: flex;
       background: white;
       border-bottom: 1px solid var(--border);
       position: sticky;
-      top: 62px;
+      top: 70px;
       z-index: 40;
       overflow-x: auto;
     }
-
     .tab {
       flex: 1;
       min-width: 70px;
@@ -82,21 +77,10 @@
       border-bottom: 3px solid transparent;
       white-space: nowrap;
     }
-
-    .tab.active {
-      color: var(--primary);
-      border-bottom-color: var(--primary);
-    }
-
-    .container {
-      padding: 14px 12px 20px;
-      max-width: 480px;
-      margin: 0 auto;
-    }
-
+    .tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+    .container { padding: 14px 12px 20px; max-width: 480px; margin: 0 auto; }
     .tab-content { display: none; }
     .tab-content.active { display: block; }
-
     .card {
       background: var(--card);
       border-radius: var(--radius);
@@ -104,19 +88,8 @@
       margin-bottom: 12px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     }
-
-    .card h3 {
-      font-size: 0.95rem;
-      font-weight: 600;
-      margin-bottom: 12px;
-    }
-
-    .list {
-      display: flex;
-      flex-direction: column;
-      gap: 7px;
-    }
-
+    .card h3 { font-size: 0.95rem; font-weight: 600; margin-bottom: 12px; }
+    .list { display: flex; flex-direction: column; gap: 7px; }
     .list-item {
       display: flex;
       align-items: center;
@@ -125,7 +98,6 @@
       padding: 12px 14px;
       font-size: 0.96rem;
     }
-
     .list-item .num {
       font-weight: 700;
       color: var(--primary);
@@ -133,32 +105,11 @@
       margin-left: 10px;
       text-align: right;
     }
-
-    .list-item .name {
-      flex: 1;
-      text-align: right;
-    }
-
-    .empty {
-      text-align: center;
-      color: var(--text-secondary);
-      padding: 22px 10px;
-      font-size: 0.92rem;
-    }
-
-    .free-spots {
-      text-align: center;
-      margin-top: 12px;
-      font-size: 0.86rem;
-      color: var(--text-secondary);
-      font-weight: 500;
-    }
-
+    .list-item .name { flex: 1; text-align: right; }
+    .empty { text-align: center; color: var(--text-secondary); padding: 22px 10px; font-size: 0.92rem; }
+    .free-spots { text-align: center; margin-top: 12px; font-size: 0.86rem; color: var(--text-secondary); font-weight: 500; }
     .form-group { margin-bottom: 11px; }
-
-    input[type="text"],
-    input[type="password"],
-    select {
+    input[type="text"], input[type="email"], input[type="password"], select {
       width: 100%;
       padding: 14px 16px;
       font-size: 1rem;
@@ -166,13 +117,11 @@
       border-radius: 14px;
       background: #fff;
     }
-
     input:focus, select:focus {
       outline: none;
       border-color: var(--primary);
       box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
     }
-
     button {
       width: 100%;
       padding: 14px;
@@ -182,9 +131,7 @@
       border-radius: 14px;
       cursor: pointer;
     }
-
     button:active { transform: scale(0.97); }
-
     .btn-primary { background: var(--primary); color: white; }
     .btn-secondary { background: var(--success); color: white; }
     .btn-danger { background: var(--danger); color: white; }
@@ -193,15 +140,6 @@
     .btn-copy { background: #0f766e; color: white; margin-top: 10px; }
     .btn-bit { background: #00a3e0; color: white; }
     .btn-paybox { background: #6b21a8; color: white; }
-
-    .btn-bit, .btn-paybox {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      font-size: 1.05rem;
-    }
-
     .message {
       padding: 12px 16px;
       border-radius: 14px;
@@ -210,54 +148,17 @@
       font-weight: 500;
       font-size: 0.92rem;
     }
-
     .success { background: #dcfce7; color: #166534; }
     .error { background: #fee2e2; color: #991b1b; }
     .hidden { display: none !important; }
-
-    .status-text {
-      text-align: center;
-      font-size: 0.84rem;
-      color: var(--text-secondary);
-      margin-top: 10px;
-    }
-
-    .checkbox-item {
-      padding: 11px 0;
-      border-bottom: 1px solid #f1f5f9;
-    }
-
+    .status-text { text-align: center; font-size: 0.84rem; color: var(--text-secondary); margin-top: 10px; }
+    .checkbox-item { padding: 11px 0; border-bottom: 1px solid #f1f5f9; }
     .checkbox-item:last-child { border-bottom: none; }
-
-    .checkbox-item label {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-size: 0.96rem;
-      cursor: pointer;
-    }
-
-    .checkbox-item input {
-      width: 20px;
-      height: 20px;
-      accent-color: var(--primary);
-    }
-
-    .admin-section {
-      background: #fffbeb;
-      border: 1.5px dashed #f59e0b;
-    }
-
+    .checkbox-item label { display: flex; align-items: center; gap: 12px; font-size: 0.96rem; cursor: pointer; }
+    .checkbox-item input { width: 20px; height: 20px; accent-color: var(--primary); }
+    .admin-section { background: #fffbeb; border: 1.5px dashed #f59e0b; }
     .admin-section h3 { color: #b45309; }
-
-    .payment-note {
-      text-align: center;
-      font-size: 0.88rem;
-      color: var(--text-secondary);
-      margin-bottom: 16px;
-      line-height: 1.5;
-    }
-
+    .payment-note { text-align: center; font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 16px; line-height: 1.5; }
     .admin-list-item {
       display: flex;
       justify-content: space-between;
@@ -266,7 +167,6 @@
       border-bottom: 1px solid #f1f5f9;
       font-size: 0.95rem;
     }
-
     .admin-list-item button {
       width: auto;
       padding: 6px 12px;
@@ -275,206 +175,365 @@
       color: white;
       border-radius: 8px;
     }
+    /* Login */
+    #loginScreen {
+      max-width: 400px;
+      margin: 40px auto;
+      padding: 0 16px;
+    }
+    .login-card {
+      background: white;
+      border-radius: 20px;
+      padding: 28px 22px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+    .login-card h2 {
+      text-align: center;
+      font-size: 1.3rem;
+      margin-bottom: 8px;
+    }
+    .login-sub {
+      text-align: center;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      margin-bottom: 24px;
+    }
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 20px 0;
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+    }
+    .divider::before, .divider::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+    #googleBtnWrap {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 8px;
+      min-height: 44px;
+    }
   </style>
 </head>
 <body>
 
-  <div class="header">
-    <h1>הרשמה למשחק כדורסל</h1>
-    <div class="game-info" id="gameInfo">טוען...</div>
+  <!-- מסך התחברות -->
+  <div id="loginScreen">
+    <div class="login-card">
+      <h2>הרשמה למשחק כדורסל</h2>
+      <p class="login-sub">יש להתחבר כדי להירשם או לבטל</p>
+
+      <div id="googleBtnWrap"></div>
+
+      <div class="divider">או עם מייל</div>
+
+      <div id="emailStep">
+        <div class="form-group">
+          <input type="email" id="loginEmail" placeholder="כתובת המייל שלך">
+        </div>
+        <button class="btn-primary" onclick="requestCode()">שלח קוד למייל</button>
+      </div>
+
+      <div id="codeStep" class="hidden">
+        <p class="status-text" style="margin-bottom:12px;">קוד נשלח למייל. הזן אותו כאן:</p>
+        <div class="form-group">
+          <input type="text" id="loginCode" placeholder="קוד בן 6 ספרות" inputmode="numeric">
+        </div>
+        <button class="btn-primary" onclick="verifyCode()">אימות והתחברות</button>
+        <button class="btn-gray" style="margin-top:10px;" onclick="backToEmail()">חזרה</button>
+      </div>
+
+      <div id="loginMessage" class="message hidden" style="margin-top:14px;"></div>
+    </div>
   </div>
 
-  <div class="tabs">
-    <div class="tab active" data-tab="list" onclick="switchTab('list')">רשימה</div>
-    <div class="tab" data-tab="register" onclick="switchTab('register')">הרשמה</div>
-    <div class="tab" data-tab="cancel" onclick="switchTab('cancel')">ביטול</div>
-    <div class="tab" data-tab="payment" onclick="switchTab('payment')">תשלום</div>
-    <div class="tab" data-tab="admin" onclick="switchTab('admin')">ניהול</div>
-  </div>
-
-  <div class="container">
-    <div id="message" class="message hidden"></div>
-
-    <!-- טאב רשימה -->
-    <div id="tab-list" class="tab-content active">
-      <div class="card">
-        <h3>רשימת המשחק</h3>
-        <div class="list" id="mainList">
-          <div class="empty">טוען...</div>
-        </div>
-        <div class="free-spots" id="freeSpots"></div>
-      </div>
-
-      <div class="card">
-        <h3>רשימת המתנה</h3>
-        <div class="list" id="waitlist">
-          <div class="empty">טוען...</div>
-        </div>
-      </div>
-
-      <button class="btn-copy" onclick="copyList()">העתק רשימה לוואטסאפ</button>
-    </div>
-
-    <!-- טאב הרשמה -->
-    <div id="tab-register" class="tab-content">
-      <div class="card">
-        <h3>הרשמה</h3>
-        <div class="form-group">
-          <input type="text" id="selfTz" placeholder="תעודת זהות שלך" inputmode="numeric">
-        </div>
-        <button class="btn-primary" onclick="doRegisterSelf()">הרשמה</button>
-      </div>
-
-      <div class="card" id="friendCard">
-        <h3>הרשמת חבר</h3>
-        <div class="form-group">
-          <input type="text" id="registrarTz" placeholder="תעודת זהות שלך (הרושם)" inputmode="numeric">
-        </div>
-        <div class="form-group">
-          <input type="text" id="friendName" placeholder="שם החבר">
-        </div>
-        <button class="btn-secondary" onclick="doRegisterFriend()">הרשמת חבר</button>
-        <div class="status-text" id="friendStatus"></div>
+  <!-- האפליקציה -->
+  <div id="appScreen" class="hidden">
+    <div class="header">
+      <h1>הרשמה למשחק כדורסל</h1>
+      <div class="game-info" id="gameInfo">טוען...</div>
+      <div class="user-bar">
+        <span id="userName"></span>
+        <button onclick="logout()">יציאה</button>
       </div>
     </div>
 
-    <!-- טאב ביטול -->
-    <div id="tab-cancel" class="tab-content">
-      <div class="card">
-        <h3>ביטול הרשמה</h3>
-        <div class="form-group">
-          <input type="text" id="cancelTz" placeholder="תעודת זהות שלך" inputmode="numeric">
+    <div class="tabs">
+      <div class="tab active" data-tab="list" onclick="switchTab('list')">רשימה</div>
+      <div class="tab" data-tab="register" onclick="switchTab('register')">הרשמה</div>
+      <div class="tab" data-tab="cancel" onclick="switchTab('cancel')">ביטול</div>
+      <div class="tab" data-tab="payment" onclick="switchTab('payment')">תשלום</div>
+      <div class="tab hidden" id="adminTab" data-tab="admin" onclick="switchTab('admin')">ניהול</div>
+    </div>
+
+    <div class="container">
+      <div id="message" class="message hidden"></div>
+
+      <div id="tab-list" class="tab-content active">
+        <div class="card">
+          <h3>רשימת המשחק</h3>
+          <div class="list" id="mainList"><div class="empty">טוען...</div></div>
+          <div class="free-spots" id="freeSpots"></div>
         </div>
-        <button class="btn-gray" onclick="loadMyRegs()">הצג את ההרשמות שלי</button>
-        
-        <div id="myRegs" class="hidden" style="margin-top: 14px;"></div>
-        <button class="btn-danger hidden" id="cancelBtn" onclick="doCancel()" style="margin-top: 12px;">בטל נבחרים</button>
+        <div class="card">
+          <h3>רשימת המתנה</h3>
+          <div class="list" id="waitlist"><div class="empty">טוען...</div></div>
+        </div>
+        <button class="btn-copy" onclick="copyList()">העתק רשימה לוואטסאפ</button>
       </div>
-    </div>
 
-    <!-- טאב תשלום -->
-    <div id="tab-payment" class="tab-content">
-      <div class="card">
-        <h3>תשלום על המשחק</h3>
-        <p class="payment-note">
-          יש לשלם עד שבת בערב.<br>
-          בחר את האפליקציה שבה תרצה לשלם:
-        </p>
-
-        <button class="btn-bit" id="btnBit" onclick="openBit()" style="margin-bottom: 12px;">
-          שלם עם Bit
-        </button>
-
-        <button class="btn-paybox" id="btnPaybox" onclick="openPayBox()">
-          שלם עם PayBox
-        </button>
-      </div>
-    </div>
-
-    <!-- טאב ניהול -->
-    <div id="tab-admin" class="tab-content">
-      <div class="card admin-section">
-        <h3>ניהול (אדמין)</h3>
-        
-        <div id="adminLogin">
+      <div id="tab-register" class="tab-content">
+        <div class="card">
+          <h3>הרשמה</h3>
+          <p class="status-text" style="margin-bottom:12px;">מחובר כ־<strong id="regAsName"></strong></p>
+          <button class="btn-primary" onclick="doRegisterSelf()">הירשם למשחק</button>
+        </div>
+        <div class="card" id="friendCard">
+          <h3>הרשמת חבר</h3>
           <div class="form-group">
-            <input type="password" id="adminPassword" placeholder="סיסמת אדמין">
+            <input type="text" id="friendName" placeholder="שם החבר">
           </div>
-          <button class="btn-admin" onclick="checkAdminPassword()">כניסה לניהול</button>
+          <button class="btn-secondary" onclick="doRegisterFriend()">הרשמת חבר</button>
+          <div class="status-text" id="friendStatus"></div>
         </div>
+      </div>
 
-        <div id="adminPanel" class="hidden">
-          <p class="status-text" style="margin-bottom: 14px;">מחובר כאדמין</p>
+      <div id="tab-cancel" class="tab-content">
+        <div class="card">
+          <h3>ביטול הרשמה</h3>
+          <button class="btn-gray" onclick="loadMyRegs()">הצג את ההרשמות שלי</button>
+          <div id="myRegs" class="hidden" style="margin-top:14px;"></div>
+          <button class="btn-danger hidden" id="cancelBtn" onclick="doCancel()" style="margin-top:12px;">בטל נבחרים</button>
+        </div>
+      </div>
 
-          <button class="btn-admin" onclick="doStartNewWeek()" style="margin-bottom: 16px;">התחל שבוע חדש</button>
+      <div id="tab-payment" class="tab-content">
+        <div class="card">
+          <h3>תשלום על המשחק</h3>
+          <p class="payment-note">יש לשלם עד שבת בערב.<br>בחר את האפליקציה שבה תרצה לשלם:</p>
+          <button class="btn-bit" onclick="openBit()" style="margin-bottom:12px;">שלם עם Bit</button>
+          <button class="btn-paybox" onclick="openPayBox()">שלם עם PayBox</button>
+        </div>
+      </div>
 
-          <hr style="margin: 16px 0; border: none; border-top: 1px solid #f0e0c0;">
-
-          <h3 style="font-size: 0.95rem; margin-bottom: 10px;">הוספת שחקן</h3>
-
+      <div id="tab-admin" class="tab-content">
+        <div class="card admin-section">
+          <h3>ניהול</h3>
+          <button class="btn-admin" onclick="doStartNewWeek()" style="margin-bottom:16px;">התחל שבוע חדש</button>
+          <hr style="margin:16px 0;border:none;border-top:1px solid #f0e0c0;">
+          <h3 style="font-size:0.95rem;margin-bottom:10px;">הוספת שחקן</h3>
           <div class="form-group">
             <select id="adminSelectPlayer" onchange="onAdminSelectChange()">
               <option value="">-- בחר מהמאסטר --</option>
             </select>
           </div>
-
           <div class="form-group">
-            <input type="text" id="adminAddName" placeholder="או הזן שם חופשי (אם לא מהרשימה)">
+            <input type="text" id="adminAddName" placeholder="או הזן שם חופשי">
           </div>
-
-          <button class="btn-secondary" onclick="adminAddPlayer()" style="margin-bottom: 16px;">הוסף שחקן</button>
-
-          <h3 style="font-size: 0.95rem; margin-bottom: 10px;">הסרת שחקן</h3>
-          <div id="adminRemoveList">
-            <div class="empty">לחץ "רענן רשימה"</div>
-          </div>
-          <button class="btn-gray" onclick="loadAdminList()" style="margin-top: 10px;">רענן רשימה להסרה</button>
-
-          <button class="btn-gray" onclick="logoutAdmin()" style="margin-top: 20px;">יציאה מניהול</button>
+          <button class="btn-secondary" onclick="adminAddPlayer()" style="margin-bottom:16px;">הוסף שחקן</button>
+          <h3 style="font-size:0.95rem;margin-bottom:10px;">הסרת שחקן</h3>
+          <div id="adminRemoveList"><div class="empty">לחץ רענן</div></div>
+          <button class="btn-gray" onclick="loadAdminList()" style="margin-top:10px;">רענן רשימה להסרה</button>
         </div>
       </div>
     </div>
   </div>
 
   <script>
-    // ========== רק את השורה הזו צריך לעדכן אחרי Deploy חדש ==========
-    const API_URL = "https://script.google.com/macros/s/AKfycbwDm6AqkWkATba53i7rKzJ3HVP4g1kPcxeSLiBGe06z4p_OVMG1K1b9VLwzEZF4Al7Q/exec";
-    // ================================================================
+    const API_URL = "https://script.google.com/macros/s/AKfycbwNPYb_Z-FgGUHAn4h9jBarRRuu4eNzv3p_WCBpKZyXBQZk8ZrVUsLN610aDltcFJlt/exec";
+    const STORAGE_KEY = "basket_session_v1";
 
+    let sessionToken = localStorage.getItem(STORAGE_KEY) || "";
+    let currentUser = null;
     let lastListData = null;
-    let adminPassword = "";
     let bitLink = "";
     let payboxLink = "";
+    let googleClientId = "";
+    let googleInitDone = false;
 
     async function apiCall(action, params = {}) {
       const url = new URL(API_URL);
       url.searchParams.set("action", action);
-      
       for (const key in params) {
         if (params[key] !== undefined && params[key] !== null) {
           url.searchParams.set(key, params[key]);
         }
       }
-
-      const res = await fetch(url.toString(), {
-        method: "GET",
-        redirect: "follow",
-        mode: "cors"
-      });
-
+      const res = await fetch(url.toString(), { method: "GET", redirect: "follow", mode: "cors" });
       const text = await res.text();
-      try {
-        return JSON.parse(text);
-      } catch (e) {
-        console.error("Response was not JSON:", text);
+      try { return JSON.parse(text); }
+      catch (e) {
+        console.error("Not JSON:", text);
         throw new Error("תשובה לא תקינה מהשרת");
       }
+    }
+
+    function showLoginMessage(text, ok) {
+      const el = document.getElementById("loginMessage");
+      el.textContent = text;
+      el.className = "message " + (ok ? "success" : "error");
+      el.classList.remove("hidden");
+    }
+
+    function showMessage(text, ok) {
+      const el = document.getElementById("message");
+      el.textContent = text;
+      el.className = "message " + (ok ? "success" : "error");
+      el.classList.remove("hidden");
+      setTimeout(() => el.classList.add("hidden"), 4500);
     }
 
     function switchTab(tabName) {
       document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
       document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
-      document.querySelector(`.tab[data-tab="${tabName}"]`).classList.add("active");
-      document.getElementById(`tab-${tabName}`).classList.add("active");
+      const tab = document.querySelector(`.tab[data-tab="${tabName}"]`);
+      if (tab) tab.classList.add("active");
+      const content = document.getElementById("tab-" + tabName);
+      if (content) content.classList.add("active");
     }
 
-    function showMessage(text, isSuccess) {
-      const el = document.getElementById("message");
-      el.textContent = text;
-      el.className = "message " + (isSuccess ? "success" : "error");
-      el.classList.remove("hidden");
-      setTimeout(() => el.classList.add("hidden"), 4500);
+    function showApp() {
+      document.getElementById("loginScreen").classList.add("hidden");
+      document.getElementById("appScreen").classList.remove("hidden");
+      document.getElementById("userName").textContent = currentUser.name;
+      document.getElementById("regAsName").textContent = currentUser.name;
+      if (currentUser.isAdmin) {
+        document.getElementById("adminTab").classList.remove("hidden");
+      } else {
+        document.getElementById("adminTab").classList.add("hidden");
+      }
+      refreshList();
+    }
+
+    function showLogin() {
+      document.getElementById("loginScreen").classList.remove("hidden");
+      document.getElementById("appScreen").classList.add("hidden");
+      currentUser = null;
+      sessionToken = "";
+      localStorage.removeItem(STORAGE_KEY);
+    }
+
+    function logout() {
+      showLogin();
+      initGoogleButton();
+    }
+
+    async function bootstrap() {
+      try {
+        const cfg = await apiCall("getConfig");
+        googleClientId = cfg.google_client_id || "";
+        bitLink = cfg.bit_link || "";
+        payboxLink = cfg.paybox_link || "";
+      } catch (e) {
+        console.error(e);
+      }
+
+      if (sessionToken) {
+        const res = await apiCall("validateSession", { token: sessionToken });
+        if (res.success && res.user) {
+          currentUser = res.user;
+          showApp();
+          return;
+        }
+      }
+      showLogin();
+      initGoogleButton();
+    }
+
+    function initGoogleButton() {
+      if (!googleClientId) return;
+      const tryInit = () => {
+        if (!window.google || !google.accounts || !google.accounts.id) {
+          setTimeout(tryInit, 200);
+          return;
+        }
+        if (googleInitDone) {
+          google.accounts.id.renderButton(document.getElementById("googleBtnWrap"), {
+            theme: "outline", size: "large", width: 320, text: "signin_with", locale: "he"
+          });
+          return;
+        }
+        google.accounts.id.initialize({
+          client_id: googleClientId,
+          callback: onGoogleCredential,
+          auto_select: false
+        });
+        google.accounts.id.renderButton(document.getElementById("googleBtnWrap"), {
+          theme: "outline", size: "large", width: 320, text: "signin_with", locale: "he"
+        });
+        googleInitDone = true;
+      };
+      tryInit();
+    }
+
+    async function onGoogleCredential(response) {
+      try {
+        const res = await apiCall("verifyGoogleToken", { idToken: response.credential });
+        if (!res.success) {
+          showLoginMessage(res.message || "התחברות Google נכשלה", false);
+          return;
+        }
+        sessionToken = res.token;
+        currentUser = res.user;
+        localStorage.setItem(STORAGE_KEY, sessionToken);
+        showApp();
+      } catch (e) {
+        showLoginMessage("שגיאה בהתחברות Google", false);
+      }
+    }
+
+    async function requestCode() {
+      const email = document.getElementById("loginEmail").value.trim();
+      if (!email) return showLoginMessage("נא להזין מייל", false);
+      try {
+        const res = await apiCall("requestLoginCode", { email });
+        showLoginMessage(res.message, res.success);
+        if (res.success) {
+          document.getElementById("emailStep").classList.add("hidden");
+          document.getElementById("codeStep").classList.remove("hidden");
+        }
+      } catch (e) {
+        showLoginMessage("שגיאה בשליחת הקוד", false);
+      }
+    }
+
+    async function verifyCode() {
+      const email = document.getElementById("loginEmail").value.trim();
+      const code = document.getElementById("loginCode").value.trim();
+      if (!code) return showLoginMessage("נא להזין קוד", false);
+      try {
+        const res = await apiCall("verifyLoginCode", { email, code });
+        if (!res.success) {
+          showLoginMessage(res.message || "קוד שגוי", false);
+          return;
+        }
+        sessionToken = res.token;
+        currentUser = res.user;
+        localStorage.setItem(STORAGE_KEY, sessionToken);
+        showApp();
+      } catch (e) {
+        showLoginMessage("שגיאה באימות", false);
+      }
+    }
+
+    function backToEmail() {
+      document.getElementById("codeStep").classList.add("hidden");
+      document.getElementById("emailStep").classList.remove("hidden");
+      document.getElementById("loginCode").value = "";
     }
 
     async function refreshList() {
       try {
         const data = await apiCall("getPublicList");
         lastListData = data;
-
-        // שמירת לינקי תשלום
         if (data.bit_link) bitLink = data.bit_link;
         if (data.paybox_link) payboxLink = data.paybox_link;
-        
+
         if (data.error) {
           document.getElementById("gameInfo").textContent = data.error;
           document.getElementById("mainList").innerHTML = `<div class="empty">${data.error}</div>`;
@@ -483,32 +542,18 @@
           return;
         }
 
-        document.getElementById("gameInfo").textContent = 
+        document.getElementById("gameInfo").textContent =
           `משחק בתאריך ${data.gameDate}` + (data.isLocked ? " • ההרשמה סגורה" : "");
 
-        if (data.main && data.main.length) {
-          document.getElementById("mainList").innerHTML = data.main.map(r => 
-            `<div class="list-item">
-              <span class="num">${r.position}.</span>
-              <span class="name">${r.display}</span>
-            </div>`
-          ).join("");
-        } else {
-          document.getElementById("mainList").innerHTML = `<div class="empty">אין נרשמים עדיין</div>`;
-        }
+        document.getElementById("mainList").innerHTML = (data.main && data.main.length)
+          ? data.main.map(r => `<div class="list-item"><span class="num">${r.position}.</span><span class="name">${r.display}</span></div>`).join("")
+          : `<div class="empty">אין נרשמים עדיין</div>`;
 
-        if (data.waitlist && data.waitlist.length) {
-          document.getElementById("waitlist").innerHTML = data.waitlist.map(r => 
-            `<div class="list-item">
-              <span class="num">${r.position}.</span>
-              <span class="name">${r.display}</span>
-            </div>`
-          ).join("");
-        } else {
-          document.getElementById("waitlist").innerHTML = `<div class="empty">רשימת המתנה ריקה</div>`;
-        }
+        document.getElementById("waitlist").innerHTML = (data.waitlist && data.waitlist.length)
+          ? data.waitlist.map(r => `<div class="list-item"><span class="num">${r.position}.</span><span class="name">${r.display}</span></div>`).join("")
+          : `<div class="empty">רשימת המתנה ריקה</div>`;
 
-        document.getElementById("freeSpots").textContent = 
+        document.getElementById("freeSpots").textContent =
           `מקומות פנויים: ${data.freeSpots} מתוך ${data.maxPlayers}`;
 
         const friendCard = document.getElementById("friendCard");
@@ -516,76 +561,53 @@
           document.getElementById("friendStatus").textContent = "✓ הרשמת חברים פתוחה";
           friendCard.style.opacity = "1";
         } else {
-          document.getElementById("friendStatus").textContent = data.isLocked 
-            ? "ההרשמה נסגרה" 
+          document.getElementById("friendStatus").textContent = data.isLocked
+            ? "ההרשמה נסגרה"
             : "הרשמת חברים נפתחת ביום שישי ב-12:00";
           friendCard.style.opacity = "0.78";
         }
-      } catch (err) {
-        console.error(err);
+      } catch (e) {
+        console.error(e);
         showMessage("שגיאה בטעינת הרשימה", false);
       }
     }
 
     function copyList() {
-      if (!lastListData || lastListData.error) {
-        return showMessage("אין רשימה להעתיק", false);
-      }
-
-      let text = `🏀 רשימת משחק – ${lastListData.gameDate}\n\n`;
-      text += `📋 רשימת המשחק:\n`;
-
+      if (!lastListData || lastListData.error) return showMessage("אין רשימה להעתיק", false);
+      let text = `🏀 רשימת משחק – ${lastListData.gameDate}\n\n📋 רשימת המשחק:\n`;
       if (lastListData.main && lastListData.main.length) {
-        lastListData.main.forEach(r => text += `${r.position}. ${r.display}\n`);
-      } else {
-        text += "אין נרשמים\n";
-      }
-
+        lastListData.main.forEach(r => { text += `${r.position}. ${r.display}\n`; });
+      } else text += "אין נרשמים\n";
       text += `\n⏳ רשימת המתנה:\n`;
       if (lastListData.waitlist && lastListData.waitlist.length) {
-        lastListData.waitlist.forEach(r => text += `${r.position}. ${r.display}\n`);
-      } else {
-        text += "ריקה\n";
-      }
-
+        lastListData.waitlist.forEach(r => { text += `${r.position}. ${r.display}\n`; });
+      } else text += "ריקה\n";
       text += `\nמקומות פנויים: ${lastListData.freeSpots}/${lastListData.maxPlayers}`;
-
-      navigator.clipboard.writeText(text).then(() => {
-        showMessage("הרשימה הועתקה! אפשר להדביק בוואטסאפ", true);
-      }).catch(() => {
-        showMessage("לא הצלחתי להעתיק", false);
-      });
+      navigator.clipboard.writeText(text).then(() => showMessage("הרשימה הועתקה!", true))
+        .catch(() => showMessage("לא הצלחתי להעתיק", false));
     }
 
     function openBit() {
       if (bitLink) window.open(bitLink, "_blank");
       else showMessage("לינק Bit לא מוגדר", false);
     }
-
     function openPayBox() {
       if (payboxLink) window.open(payboxLink, "_blank");
       else showMessage("לינק PayBox לא מוגדר", false);
     }
 
     async function doRegisterSelf() {
-      const tz = document.getElementById("selfTz").value.trim();
-      if (!tz) return showMessage("נא להזין תעודת זהות", false);
-
-      const res = await apiCall("registerSelf", { tz });
+      if (!sessionToken) return showMessage("יש להתחבר", false);
+      const res = await apiCall("registerSelf", { token: sessionToken });
       showMessage(res.message, res.success);
-      if (res.success) {
-        document.getElementById("selfTz").value = "";
-        refreshList();
-        switchTab("list");
-      }
+      if (res.success) { refreshList(); switchTab("list"); }
     }
 
     async function doRegisterFriend() {
-      const registrarTz = document.getElementById("registrarTz").value.trim();
+      if (!sessionToken) return showMessage("יש להתחבר", false);
       const friendName = document.getElementById("friendName").value.trim();
-      if (!registrarTz || !friendName) return showMessage("נא למלא את כל השדות", false);
-
-      const res = await apiCall("registerFriend", { registrarTz, friendName });
+      if (!friendName) return showMessage("נא להזין שם חבר", false);
+      const res = await apiCall("registerFriend", { token: sessionToken, friendName });
       showMessage(res.message, res.success);
       if (res.success) {
         document.getElementById("friendName").value = "";
@@ -595,23 +617,17 @@
     }
 
     async function loadMyRegs() {
-      const tz = document.getElementById("cancelTz").value.trim();
-      if (!tz) return showMessage("נא להזין תעודת זהות", false);
-
-      const list = await apiCall("getMyRegistrations", { tz });
+      if (!sessionToken) return showMessage("יש להתחבר", false);
+      const list = await apiCall("getMyRegistrations", { token: sessionToken });
       const container = document.getElementById("myRegs");
-
       if (!list || list.length === 0) {
         container.innerHTML = `<div class="empty">לא נמצאו הרשמות</div>`;
         document.getElementById("cancelBtn").classList.add("hidden");
       } else {
-        container.innerHTML = list.map(r => 
-          `<div class="checkbox-item">
-            <label>
-              <input type="checkbox" value="${r.id}">
-              <span>${r.display}</span>
-            </label>
-          </div>`
+        container.innerHTML = list.map(r =>
+          `<div class="checkbox-item"><label>
+            <input type="checkbox" value="${r.id}"><span>${r.display}</span>
+          </label></div>`
         ).join("");
         document.getElementById("cancelBtn").classList.remove("hidden");
       }
@@ -619,11 +635,10 @@
     }
 
     async function doCancel() {
-      const tz = document.getElementById("cancelTz").value.trim();
+      if (!sessionToken) return;
       const checked = [...document.querySelectorAll("#myRegs input:checked")].map(c => c.value);
-      if (checked.length === 0) return showMessage("נא לבחור לפחות הרשמה אחת", false);
-
-      const res = await apiCall("cancelRegistrations", { tz, ids: checked.join(",") });
+      if (!checked.length) return showMessage("נא לבחור לפחות הרשמה אחת", false);
+      const res = await apiCall("cancelRegistrations", { token: sessionToken, ids: checked.join(",") });
       showMessage(res.message, res.success);
       if (res.success) {
         document.getElementById("myRegs").classList.add("hidden");
@@ -633,74 +648,41 @@
       }
     }
 
-    // ===== Admin =====
-    async function checkAdminPassword() {
-      const password = document.getElementById("adminPassword").value.trim();
-      if (!password) return showMessage("נא להזין סיסמה", false);
-
-      const res = await apiCall("getMasterList", { password });
-      if (res.success === false) {
-        return showMessage(res.message || "סיסמה שגויה", false);
-      }
-
-      adminPassword = password;
-      document.getElementById("adminLogin").classList.add("hidden");
-      document.getElementById("adminPanel").classList.remove("hidden");
-      document.getElementById("adminPassword").value = "";
-
-      // מילוי ה-Select
-      const select = document.getElementById("adminSelectPlayer");
-      select.innerHTML = `<option value="">-- בחר מהמאסטר --</option>`;
-      (res.list || []).forEach(p => {
-        const symbol = p.symbol ? " " + p.symbol : "";
-        select.innerHTML += `<option value="${p.tz}|${p.name}">${p.name}${symbol}</option>`;
-      });
-
-      loadAdminList();
+    async function doStartNewWeek() {
+      if (!confirm("להתחיל שבוע חדש? הרשימה תתאפס.")) return;
+      const res = await apiCall("startNewWeek", { token: sessionToken });
+      showMessage(res.message, res.success);
+      if (res.success) { refreshList(); switchTab("list"); }
     }
 
-    function logoutAdmin() {
-      adminPassword = "";
-      document.getElementById("adminPanel").classList.add("hidden");
-      document.getElementById("adminLogin").classList.remove("hidden");
+    async function loadMasterSelect() {
+      const res = await apiCall("getMasterList", { token: sessionToken });
+      const select = document.getElementById("adminSelectPlayer");
+      select.innerHTML = `<option value="">-- בחר מהמאסטר --</option>`;
+      if (res.success && res.list) {
+        res.list.forEach(p => {
+          const symbol = p.symbol ? " " + p.symbol : "";
+          select.innerHTML += `<option value="${p.email}|${p.name}">${p.name}${symbol}</option>`;
+        });
+      }
     }
 
     function onAdminSelectChange() {
       const val = document.getElementById("adminSelectPlayer").value;
-      if (val) {
-        const name = val.split("|")[1];
-        document.getElementById("adminAddName").value = name;
-      }
-    }
-
-    async function doStartNewWeek() {
-      if (!adminPassword) return showMessage("יש להתחבר קודם", false);
-      if (!confirm("האם אתה בטוח שברצונך להתחיל שבוע חדש?\nהמשחק הקודם ייסגר והרשימה תתאפס.")) return;
-
-      const res = await apiCall("startNewWeek", { password: adminPassword });
-      showMessage(res.message, res.success);
-      if (res.success) {
-        refreshList();
-        switchTab("list");
-      }
+      if (val) document.getElementById("adminAddName").value = val.split("|")[1];
     }
 
     async function adminAddPlayer() {
-      if (!adminPassword) return showMessage("יש להתחבר קודם", false);
-
       const selectVal = document.getElementById("adminSelectPlayer").value;
       let name = document.getElementById("adminAddName").value.trim();
-      let tz = "";
-
+      let email = "";
       if (selectVal) {
         const parts = selectVal.split("|");
-        tz = parts[0];
+        email = parts[0];
         name = parts[1];
       }
-
-      if (!name) return showMessage("חובה לבחור מהרשימה או להזין שם", false);
-
-      const res = await apiCall("adminAdd", { password: adminPassword, name, tz });
+      if (!name) return showMessage("חובה לבחור או להזין שם", false);
+      const res = await apiCall("adminAdd", { token: sessionToken, name, email });
       showMessage(res.message, res.success);
       if (res.success) {
         document.getElementById("adminAddName").value = "";
@@ -711,40 +693,39 @@
     }
 
     async function loadAdminList() {
-      if (!adminPassword) return;
-
-      const data = await apiCall("getAdminList", { password: adminPassword });
-      const container = document.getElementById("adminRemoveList");
-
+      const data = await apiCall("getAdminList", { token: sessionToken });
       const all = [...(data.main || []), ...(data.waitlist || [])];
-
-      if (all.length === 0) {
-        container.innerHTML = `<div class="empty">אין שחקנים ברשימה</div>`;
+      const container = document.getElementById("adminRemoveList");
+      if (!all.length) {
+        container.innerHTML = `<div class="empty">אין שחקנים</div>`;
         return;
       }
-
-      container.innerHTML = all.map(r => `
-        <div class="admin-list-item">
+      container.innerHTML = all.map(r =>
+        `<div class="admin-list-item">
           <span>${r.display}</span>
           <button onclick="adminRemovePlayer('${r.id}')">הסר</button>
-        </div>
-      `).join("");
+        </div>`
+      ).join("");
     }
 
     async function adminRemovePlayer(regId) {
-      if (!adminPassword) return;
-      if (!confirm("להסיר את השחקן מהרשימה?")) return;
-
-      const res = await apiCall("adminRemove", { password: adminPassword, regId });
+      if (!confirm("להסיר את השחקן?")) return;
+      const res = await apiCall("adminRemove", { token: sessionToken, regId });
       showMessage(res.message, res.success);
-      if (res.success) {
-        refreshList();
-        loadAdminList();
-      }
+      if (res.success) { refreshList(); loadAdminList(); }
     }
 
-    // Init
-    refreshList();
+    // כשנכנסים לטאב ניהול – טען מאסטר
+    const origSwitch = switchTab;
+    switchTab = function(tabName) {
+      origSwitch(tabName);
+      if (tabName === "admin" && currentUser && currentUser.isAdmin) {
+        loadMasterSelect();
+        loadAdminList();
+      }
+    };
+
+    bootstrap();
   </script>
 </body>
 </html>
