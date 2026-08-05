@@ -14,7 +14,7 @@
       --danger: #dc2626;
       --warning: #d97706;
       --bg: #f1f5f9;
-      --card: #ffffff;
+      --card: #fff;
       --text: #0f172a;
       --muted: #64748b;
       --border: #e2e8f0;
@@ -27,7 +27,7 @@
       color: var(--text);
       line-height: 1.35;
       min-height: 100vh;
-      padding-bottom: 16px;
+      padding-bottom: 24px;
     }
     .header {
       background: var(--primary);
@@ -39,24 +39,31 @@
     }
     .header h1 { font-size: 1.05rem; font-weight: 700; text-align: center; }
     .game-info { text-align: center; font-size: 0.78rem; opacity: 0.9; margin-top: 2px; }
-    .user-bar { text-align: center; font-size: 0.75rem; opacity: 0.9; margin-top: 3px; }
-    .user-bar button {
-      background: transparent; border: 1px solid rgba(255,255,255,0.5);
-      color: #fff; padding: 1px 8px; border-radius: 20px; font-size: 0.72rem; width: auto; margin-right: 6px;
+    .user-bar {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      margin-top: 4px;
+      font-size: 0.75rem;
     }
-    .tabs {
-      display: flex; background: #fff; border-bottom: 1px solid var(--border);
-      position: sticky; top: 58px; z-index: 40; overflow-x: auto;
+    .user-bar button, .icon-btn {
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.5);
+      color: #fff;
+      padding: 2px 8px;
+      border-radius: 20px;
+      font-size: 0.72rem;
+      width: auto;
+      cursor: pointer;
     }
-    .tab {
-      flex: 1; min-width: 64px; text-align: center; padding: 10px 2px;
-      font-size: 0.8rem; font-weight: 600; color: var(--muted);
-      border-bottom: 2px solid transparent; white-space: nowrap; cursor: pointer;
+    .gear-btn {
+      border: none;
+      font-size: 1rem;
+      padding: 0 4px;
+      line-height: 1;
     }
-    .tab.active { color: var(--primary); border-bottom-color: var(--primary); }
-    .container { padding: 10px 10px 16px; max-width: 480px; margin: 0 auto; }
-    .tab-content { display: none; }
-    .tab-content.active { display: block; }
+    .container { padding: 10px; max-width: 480px; margin: 0 auto; }
     .card {
       background: var(--card);
       border-radius: var(--radius);
@@ -64,48 +71,91 @@
       margin-bottom: 10px;
       box-shadow: 0 1px 4px rgba(0,0,0,0.05);
     }
-    .card h3 {
-      font-size: 0.88rem; font-weight: 600; margin-bottom: 8px;
-      display: flex; justify-content: space-between; align-items: center;
+    .card-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      gap: 6px;
     }
+    .card-head h3 { font-size: 0.9rem; font-weight: 600; }
+    .head-actions { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+    .btn-sm {
+      width: auto;
+      padding: 6px 10px;
+      font-size: 0.78rem;
+      border-radius: 8px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .btn-sm:disabled { opacity: 0.55; cursor: not-allowed; }
+    .btn-refresh { background: #eff6ff; color: var(--primary); }
+    .btn-reg { background: var(--primary); color: #fff; }
+    .btn-friend { background: var(--success); color: #fff; }
     .list { display: flex; flex-direction: column; gap: 4px; }
     .list-item {
-      display: flex; align-items: center;
-      background: #f8fafc; border-radius: 10px;
-      padding: 8px 10px; font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      background: #f8fafc;
+      border-radius: 10px;
+      padding: 8px 10px;
+      font-size: 0.9rem;
+      gap: 8px;
     }
-    .list-item .num { font-weight: 700; color: var(--primary); min-width: 24px; margin-left: 8px; text-align: right; }
+    .list-item .num {
+      font-weight: 700;
+      color: var(--primary);
+      min-width: 22px;
+      text-align: right;
+    }
     .list-item .name { flex: 1; text-align: right; }
+    .btn-minus {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: none;
+      background: #fee2e2;
+      color: var(--danger);
+      font-size: 1.1rem;
+      font-weight: 700;
+      line-height: 1;
+      padding: 0;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
     .empty { text-align: center; color: var(--muted); padding: 14px 8px; font-size: 0.86rem; }
     .free-spots { text-align: center; margin-top: 8px; font-size: 0.8rem; color: var(--muted); }
-    .form-group { margin-bottom: 8px; }
-    input, select {
-      width: 100%; padding: 12px 14px; font-size: 0.95rem;
-      border: 1.5px solid var(--border); border-radius: 12px; background: #fff;
-    }
-    input:focus, select:focus { outline: none; border-color: var(--primary); }
+    .pay-row { display: flex; gap: 8px; }
+    .pay-row button { flex: 1; }
+    .btn-bit { background: #00a3e0; color: #fff; }
+    .btn-paybox { background: #6b21a8; color: #fff; }
+    .btn-copy { background: #0f766e; color: #fff; margin-top: 8px; width: 100%; }
     button {
-      width: 100%; padding: 12px; font-size: 0.95rem; font-weight: 600;
-      border: none; border-radius: 12px; cursor: pointer;
-      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      width: 100%;
+      padding: 12px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
     }
-    button:active { transform: scale(0.98); }
     button:disabled { opacity: 0.65; cursor: not-allowed; }
     .btn-primary { background: var(--primary); color: #fff; }
     .btn-secondary { background: var(--success); color: #fff; }
     .btn-danger { background: var(--danger); color: #fff; }
     .btn-gray { background: #e2e8f0; color: var(--text); }
     .btn-admin { background: var(--warning); color: #fff; }
-    .btn-copy { background: #0f766e; color: #fff; margin-top: 8px; }
-    .btn-bit { background: #00a3e0; color: #fff; }
-    .btn-paybox { background: #6b21a8; color: #fff; }
     .btn-wa {
       display: block; margin: 6px 0; padding: 12px; background: #25D366; color: #fff;
       text-align: center; border-radius: 12px; font-weight: 600; text-decoration: none;
-    }
-    .btn-icon {
-      width: auto; padding: 4px 10px; font-size: 0.78rem;
-      background: #eff6ff; color: var(--primary); border-radius: 8px;
     }
     .message {
       padding: 10px 12px; border-radius: 12px; margin-bottom: 10px;
@@ -115,25 +165,15 @@
     .error { background: #fee2e2; color: #991b1b; }
     .hidden { display: none !important; }
     .status-text { text-align: center; font-size: 0.8rem; color: var(--muted); margin-top: 8px; }
-    .checkbox-item { padding: 9px 0; border-bottom: 1px solid #f1f5f9; }
-    .checkbox-item:last-child { border-bottom: none; }
-    .checkbox-item label { display: flex; align-items: center; gap: 10px; font-size: 0.9rem; }
-    .checkbox-item input { width: 18px; height: 18px; accent-color: var(--primary); }
-    .admin-section { background: #fffbeb; border: 1.5px dashed #f59e0b; }
-    .admin-section h3 { color: #b45309; }
-    .payment-note { text-align: center; font-size: 0.84rem; color: var(--muted); margin-bottom: 12px; }
-    .admin-list-item, .pending-item {
-      padding: 8px 0; border-bottom: 1px solid #f1f5f9; font-size: 0.9rem;
+    .form-group { margin-bottom: 8px; }
+    input, select {
+      width: 100%; padding: 12px 14px; font-size: 0.95rem;
+      border: 1.5px solid var(--border); border-radius: 12px; background: #fff;
     }
-    .admin-list-item {
-      display: flex; justify-content: space-between; align-items: center; gap: 6px;
-    }
-    .admin-list-item button, .pending-item .actions button {
-      width: auto; padding: 6px 10px; font-size: 0.8rem; border-radius: 8px;
-    }
-    .pending-item .actions { display: flex; gap: 6px; margin-top: 6px; }
     .promote-card { border: 1.5px solid #16a34a; }
-    .promote-card h3 { color: #166534; }
+    .promote-card h3 { color: #166534; font-size: 0.9rem; margin-bottom: 6px; }
+
+    /* Login */
     #loginScreen { max-width: 400px; margin: 32px auto; padding: 0 14px; }
     .login-card {
       background: #fff; border-radius: 16px; padding: 22px 18px;
@@ -144,19 +184,52 @@
     .divider { display: flex; align-items: center; gap: 10px; margin: 16px 0; color: var(--muted); font-size: 0.8rem; }
     .divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: var(--border); }
     #googleBtnWrap { display: flex; justify-content: center; min-height: 40px; }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(15,23,42,0.45);
+      z-index: 100; display: flex; align-items: flex-end; justify-content: center;
+      padding: 12px;
+    }
+    .modal {
+      background: #fff; width: 100%; max-width: 480px; max-height: 88vh;
+      border-radius: 16px 16px 12px 12px; overflow: auto; padding: 16px;
+    }
+    .modal-head {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 12px;
+    }
+    .modal-head h3 { font-size: 1rem; }
+    .modal-close {
+      width: auto; padding: 4px 10px; background: #f1f5f9; color: var(--text);
+      border-radius: 8px; font-size: 0.85rem;
+    }
+    .admin-section { background: #fffbeb; border: 1.5px dashed #f59e0b; }
+    .admin-list-item, .pending-item {
+      padding: 8px 0; border-bottom: 1px solid #f1f5f9; font-size: 0.9rem;
+    }
+    .admin-list-item {
+      display: flex; justify-content: space-between; align-items: center; gap: 6px;
+    }
+    .admin-list-item button, .pending-item .actions button {
+      width: auto; padding: 6px 10px; font-size: 0.8rem; border-radius: 8px;
+    }
+    .pending-item .actions { display: flex; gap: 6px; margin-top: 6px; }
+
     .spinner {
-      width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.35);
+      width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.35);
       border-top-color: #fff; border-radius: 50%;
       animation: spin 0.7s linear infinite; flex-shrink: 0;
     }
-    .btn-gray .spinner, .btn-icon .spinner {
-      border: 2px solid rgba(37,99,235,0.25); border-top-color: var(--primary);
+    .btn-refresh .spinner, .btn-gray .spinner, .modal-close .spinner {
+      border-color: rgba(37,99,235,0.25); border-top-color: var(--primary);
     }
     @keyframes spin { to { transform: rotate(360deg); } }
   </style>
 </head>
 <body>
 
+  <!-- Login -->
   <div id="loginScreen">
     <div class="login-card">
       <h2>הרשמה למשחק כדורסל</h2>
@@ -181,22 +254,16 @@
     </div>
   </div>
 
+  <!-- App -->
   <div id="appScreen" class="hidden">
     <div class="header">
       <h1>הרשמה למשחק כדורסל</h1>
       <div class="game-info" id="gameInfo">טוען...</div>
       <div class="user-bar">
         <span id="userName"></span>
+        <button class="gear-btn hidden" id="btnGear" onclick="openAdminModal()" title="ניהול">⚙️</button>
         <button onclick="logout()">יציאה</button>
       </div>
-    </div>
-
-    <div class="tabs">
-      <div class="tab active" data-tab="list" onclick="switchTab('list')">רשימה</div>
-      <div class="tab" data-tab="register" onclick="switchTab('register')">הרשמה</div>
-      <div class="tab" data-tab="cancel" onclick="switchTab('cancel')">ביטול</div>
-      <div class="tab" data-tab="payment" onclick="switchTab('payment')">תשלום</div>
-      <div class="tab hidden" id="adminTab" data-tab="admin" onclick="switchTab('admin')">ניהול</div>
     </div>
 
     <div class="container">
@@ -208,83 +275,79 @@
         <div id="promoteButtons"></div>
       </div>
 
-      <div id="tab-list" class="tab-content active">
-        <div class="card">
-          <h3>
-            <span>רשימת המשחק</span>
-            <button class="btn-icon" id="btnRefresh" onclick="manualRefresh()">↻ רענון</button>
-          </h3>
-          <div class="list" id="mainList"><div class="empty">טוען...</div></div>
-          <div class="free-spots" id="freeSpots"></div>
-        </div>
-        <div class="card">
-          <h3>רשימת המתנה</h3>
-          <div class="list" id="waitlist"><div class="empty">טוען...</div></div>
-        </div>
-        <button class="btn-copy" id="btnCopy" onclick="copyList()">העתק רשימה לוואטסאפ</button>
-      </div>
-
-      <div id="tab-register" class="tab-content">
-        <div class="card">
-          <h3>הרשמה</h3>
-          <p class="status-text" style="margin-bottom:10px;">מחובר כ־<strong id="regAsName"></strong></p>
-          <button class="btn-primary" id="btnRegSelf" onclick="doRegisterSelf()">הירשם למשחק</button>
-        </div>
-        <div class="card" id="friendCard">
-          <h3>הרשמת חבר</h3>
-          <div class="form-group">
-            <input type="text" id="friendName" placeholder="שם החבר">
+      <div class="card">
+        <div class="card-head">
+          <h3>רשימת המשחק</h3>
+          <div class="head-actions">
+            <button class="btn-sm btn-refresh" id="btnRefresh" onclick="manualRefresh()">↻</button>
+            <button class="btn-sm btn-reg" id="btnRegSelf" onclick="doRegisterSelf()">+ הרשמה</button>
+            <button class="btn-sm btn-friend hidden" id="btnFriend" onclick="openFriendModal()">+ חבר</button>
           </div>
-          <button class="btn-secondary" id="btnRegFriend" onclick="doRegisterFriend()">הרשמת חבר</button>
-          <div class="status-text" id="friendStatus"></div>
         </div>
+        <div class="list" id="mainList"><div class="empty">טוען...</div></div>
+        <div class="free-spots" id="freeSpots"></div>
       </div>
 
-      <div id="tab-cancel" class="tab-content">
-        <div class="card">
-          <h3>ביטול הרשמה</h3>
-          <button class="btn-gray" id="btnLoadRegs" onclick="loadMyRegs()">הצג את ההרשמות שלי</button>
-          <div id="myRegs" class="hidden" style="margin-top:10px;"></div>
-          <button class="btn-danger hidden" id="cancelBtn" onclick="doCancel()" style="margin-top:10px;">בטל נבחרים</button>
-        </div>
+      <div class="card">
+        <div class="card-head"><h3>רשימת המתנה</h3></div>
+        <div class="list" id="waitlist"><div class="empty">טוען...</div></div>
       </div>
 
-      <div id="tab-payment" class="tab-content">
-        <div class="card">
-          <h3>תשלום על המשחק</h3>
-          <p class="payment-note">יש לשלם עד שבת בערב.<br>בחר אפליקציה:</p>
-          <button class="btn-bit" onclick="openBit()" style="margin-bottom:8px;">שלם עם Bit</button>
-          <button class="btn-paybox" onclick="openPayBox()">שלם עם PayBox</button>
+      <button class="btn-copy" onclick="copyList()">העתק רשימה לוואטסאפ</button>
+
+      <div class="card" style="margin-top:10px;">
+        <div class="card-head"><h3>תשלום</h3></div>
+        <div class="pay-row">
+          <button class="btn-bit" onclick="openBit()">Bit</button>
+          <button class="btn-paybox" onclick="openPayBox()">PayBox</button>
         </div>
       </div>
+    </div>
+  </div>
 
-      <div id="tab-admin" class="tab-content">
-        <div class="card admin-section">
-          <h3>ניהול</h3>
-          <button class="btn-admin" id="btnNewWeek" onclick="doStartNewWeek()" style="margin-bottom:12px;">התחל שבוע חדש</button>
-
-          <hr style="margin:12px 0;border:none;border-top:1px solid #f0e0c0;">
-          <h3 style="font-size:0.88rem;margin-bottom:8px;">בקשות הצטרפות</h3>
-          <div id="pendingList"><div class="empty">טוען...</div></div>
-          <button class="btn-gray" onclick="loadPending()" style="margin-top:8px;">רענן בקשות</button>
-
-          <hr style="margin:12px 0;border:none;border-top:1px solid #f0e0c0;">
-          <h3 style="font-size:0.88rem;margin-bottom:8px;">הוספת שחקן</h3>
-          <div class="form-group">
-            <select id="adminSelectPlayer" onchange="onAdminSelectChange()">
-              <option value="">-- בחר מהמאסטר --</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <input type="text" id="adminAddName" placeholder="או הזן שם חופשי">
-          </div>
-          <button class="btn-secondary" id="btnAdminAdd" onclick="adminAddPlayer()" style="margin-bottom:12px;">הוסף שחקן</button>
-
-          <h3 style="font-size:0.88rem;margin-bottom:8px;">הסרת שחקן</h3>
-          <div id="adminRemoveList"><div class="empty">לחץ רענן</div></div>
-          <button class="btn-gray" onclick="loadAdminList()" style="margin-top:8px;">רענן רשימה להסרה</button>
-        </div>
+  <!-- Friend modal -->
+  <div id="friendModal" class="modal-overlay hidden" onclick="backdropClose(event,'friendModal')">
+    <div class="modal">
+      <div class="modal-head">
+        <h3>הרשמת חבר</h3>
+        <button class="modal-close" onclick="closeFriendModal()">סגור</button>
       </div>
+      <div class="form-group">
+        <input type="text" id="friendName" placeholder="שם החבר">
+      </div>
+      <button class="btn-secondary" id="btnRegFriend" onclick="doRegisterFriend()">אישור הרשמה</button>
+    </div>
+  </div>
+
+  <!-- Admin modal -->
+  <div id="adminModal" class="modal-overlay hidden" onclick="backdropClose(event,'adminModal')">
+    <div class="modal admin-section">
+      <div class="modal-head">
+        <h3>ניהול</h3>
+        <button class="modal-close" onclick="closeAdminModal()">סגור</button>
+      </div>
+
+      <button class="btn-admin" id="btnNewWeek" onclick="doStartNewWeek()" style="margin-bottom:12px;">התחל שבוע חדש</button>
+
+      <h3 style="font-size:0.88rem;margin:10px 0 8px;color:#b45309;">בקשות הצטרפות</h3>
+      <div id="pendingList"><div class="empty">טוען...</div></div>
+      <button class="btn-gray" onclick="loadPending()" style="margin-top:8px;">רענן בקשות</button>
+
+      <hr style="margin:14px 0;border:none;border-top:1px solid #f0e0c0;">
+      <h3 style="font-size:0.88rem;margin-bottom:8px;color:#b45309;">הוספת שחקן</h3>
+      <div class="form-group">
+        <select id="adminSelectPlayer" onchange="onAdminSelectChange()">
+          <option value="">-- בחר מהמאסטר --</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <input type="text" id="adminAddName" placeholder="או הזן שם חופשי">
+      </div>
+      <button class="btn-secondary" id="btnAdminAdd" onclick="adminAddPlayer()" style="margin-bottom:12px;">הוסף שחקן</button>
+
+      <h3 style="font-size:0.88rem;margin-bottom:8px;color:#b45309;">הסרת שחקן</h3>
+      <div id="adminRemoveList"><div class="empty">לחץ רענן</div></div>
+      <button class="btn-gray" onclick="loadAdminList()" style="margin-top:8px;">רענן רשימה להסרה</button>
     </div>
   </div>
 
@@ -296,12 +359,12 @@
     let sessionToken = localStorage.getItem(STORAGE_KEY) || "";
     let currentUser = null;
     let lastListData = null;
+    let myRegMap = {}; // id -> display
     let bitLink = "";
     let payboxLink = "";
     let googleClientId = "";
     let googleInitDone = false;
     let autoRefreshTimer = null;
-    let currentTab = "list";
 
     async function apiCall(action, params = {}) {
       const url = new URL(API_URL);
@@ -325,7 +388,7 @@
       if (loading) {
         btn.disabled = true;
         btn.dataset.label = btn.dataset.label || btn.innerHTML;
-        btn.innerHTML = '<span class="spinner"></span><span>טוען...</span>';
+        btn.innerHTML = '<span class="spinner"></span>';
       } else {
         btn.disabled = false;
         btn.innerHTML = defaultText || btn.dataset.label || btn.innerHTML;
@@ -362,33 +425,15 @@
         return `<a class="btn-wa" href="https://wa.me/${p.wa}?text=${text}" target="_blank">שלח בוואטסאפ ל־${p.name}</a>`;
       }).join("");
       box.classList.remove("hidden");
-      switchTab("list");
-    }
-
-    function switchTab(tabName) {
-      currentTab = tabName;
-      document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
-      document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
-      const tab = document.querySelector(`.tab[data-tab="${tabName}"]`);
-      if (tab) tab.classList.add("active");
-      const content = document.getElementById("tab-" + tabName);
-      if (content) content.classList.add("active");
-
-      if (tabName === "admin" && currentUser && currentUser.isAdmin) {
-        loadMasterSelect();
-        loadAdminList();
-        loadPending();
-      }
     }
 
     function showApp() {
       document.getElementById("loginScreen").classList.add("hidden");
       document.getElementById("appScreen").classList.remove("hidden");
       document.getElementById("userName").textContent = currentUser.name;
-      document.getElementById("regAsName").textContent = currentUser.name;
-      if (currentUser.isAdmin) document.getElementById("adminTab").classList.remove("hidden");
-      else document.getElementById("adminTab").classList.add("hidden");
-      refreshList();
+      if (currentUser.isAdmin) document.getElementById("btnGear").classList.remove("hidden");
+      else document.getElementById("btnGear").classList.add("hidden");
+      refreshAll();
       startAutoRefresh();
     }
 
@@ -409,24 +454,23 @@
     function startAutoRefresh() {
       stopAutoRefresh();
       autoRefreshTimer = setInterval(() => {
-        if (document.visibilityState === "visible" && currentTab === "list") {
-          refreshList(true);
-        }
+        if (document.visibilityState === "visible") refreshAll(true);
       }, AUTO_REFRESH_MS);
     }
-
     function stopAutoRefresh() {
-      if (autoRefreshTimer) {
-        clearInterval(autoRefreshTimer);
-        autoRefreshTimer = null;
-      }
+      if (autoRefreshTimer) { clearInterval(autoRefreshTimer); autoRefreshTimer = null; }
     }
 
     async function manualRefresh() {
       const btn = document.getElementById("btnRefresh");
       setLoading(btn, true);
-      await refreshList();
-      setLoading(btn, false, "↻ רענון");
+      await refreshAll();
+      setLoading(btn, false, "↻");
+    }
+
+    async function refreshAll(silent) {
+      await Promise.all([refreshList(silent), loadMyRegs(silent)]);
+      updateRegButtonState();
     }
 
     async function bootstrap() {
@@ -531,6 +575,21 @@
       document.getElementById("loginCode").value = "";
     }
 
+    function renderListItems(items) {
+      if (!items || !items.length) return `<div class="empty">ריק</div>`;
+      return items.map(r => {
+        const canCancel = !!myRegMap[r.id];
+        const minus = canCancel
+          ? `<button class="btn-minus" title="ביטול" onclick="cancelOne('${r.id}', '${String(r.display).replace(/'/g, "\\'")}')">−</button>`
+          : "";
+        return `<div class="list-item">
+          <span class="num">${r.position}.</span>
+          <span class="name">${r.display}</span>
+          ${minus}
+        </div>`;
+      }).join("");
+    }
+
     async function refreshList(silent) {
       try {
         const data = await apiCall("getPublicList");
@@ -543,36 +602,72 @@
           document.getElementById("mainList").innerHTML = `<div class="empty">${data.error}</div>`;
           document.getElementById("waitlist").innerHTML = "";
           document.getElementById("freeSpots").textContent = "";
+          document.getElementById("btnFriend").classList.add("hidden");
           return;
         }
 
         document.getElementById("gameInfo").textContent =
           `משחק בתאריך ${data.gameDate}` + (data.isLocked ? " • סגור" : "");
 
-        document.getElementById("mainList").innerHTML = (data.main && data.main.length)
-          ? data.main.map(r => `<div class="list-item"><span class="num">${r.position}.</span><span class="name">${r.display}</span></div>`).join("")
-          : `<div class="empty">אין נרשמים עדיין</div>`;
-
-        document.getElementById("waitlist").innerHTML = (data.waitlist && data.waitlist.length)
-          ? data.waitlist.map(r => `<div class="list-item"><span class="num">${r.position}.</span><span class="name">${r.display}</span></div>`).join("")
-          : `<div class="empty">רשימת המתנה ריקה</div>`;
+        document.getElementById("mainList").innerHTML = renderListItems(data.main);
+        document.getElementById("waitlist").innerHTML =
+          (data.waitlist && data.waitlist.length) ? renderListItems(data.waitlist) : `<div class="empty">רשימת המתנה ריקה</div>`;
 
         document.getElementById("freeSpots").textContent =
           `פנויים: ${data.freeSpots} / ${data.maxPlayers}`;
 
-        const friendCard = document.getElementById("friendCard");
+        // כפתור חבר
         if (data.friendRegistrationOpen) {
-          document.getElementById("friendStatus").textContent = "✓ הרשמת חברים פתוחה";
-          friendCard.style.opacity = "1";
+          document.getElementById("btnFriend").classList.remove("hidden");
         } else {
-          document.getElementById("friendStatus").textContent = data.isLocked
-            ? "ההרשמה נסגרה"
-            : "הרשמת חברים נפתחת ביום שישי ב-12:00";
-          friendCard.style.opacity = "0.78";
+          document.getElementById("btnFriend").classList.add("hidden");
         }
+
+        updateRegButtonState();
       } catch (e) {
         console.error(e);
         if (!silent) showMessage("שגיאה בטעינת הרשימה", false);
+      }
+    }
+
+    async function loadMyRegs(silent) {
+      if (!sessionToken) return;
+      try {
+        const list = await apiCall("getMyRegistrations", { token: sessionToken });
+        myRegMap = {};
+        (list || []).forEach(r => { myRegMap[r.id] = r.display; });
+        // רענון תצוגת כפתורי מינוס
+        if (lastListData && !lastListData.error) {
+          document.getElementById("mainList").innerHTML = renderListItems(lastListData.main);
+          document.getElementById("waitlist").innerHTML =
+            (lastListData.waitlist && lastListData.waitlist.length)
+              ? renderListItems(lastListData.waitlist)
+              : `<div class="empty">רשימת המתנה ריקה</div>`;
+        }
+        updateRegButtonState();
+      } catch (e) {
+        if (!silent) console.error(e);
+      }
+    }
+
+    function isSelfRegistered() {
+      return Object.values(myRegMap).some(d => String(d).includes("(אני)"));
+    }
+
+    function updateRegButtonState() {
+      const btn = document.getElementById("btnRegSelf");
+      if (!btn || !lastListData) return;
+      if (lastListData.isLocked) {
+        btn.disabled = true;
+        btn.textContent = "סגור";
+        return;
+      }
+      if (isSelfRegistered()) {
+        btn.disabled = true;
+        btn.textContent = "✓ רשום";
+      } else {
+        btn.disabled = false;
+        btn.textContent = "+ הרשמה";
       }
     }
 
@@ -601,13 +696,21 @@
       try {
         const res = await apiCall("registerSelf", { token: sessionToken });
         showMessage(res.message, res.success);
-        if (res.success) { await refreshList(); switchTab("list"); }
+        if (res.success) await refreshAll();
       } catch (e) { showMessage("שגיאה בהרשמה", false); }
-      setLoading(btn, false, "הירשם למשחק");
+      updateRegButtonState();
+      if (!isSelfRegistered()) setLoading(btn, false, "+ הרשמה");
+    }
+
+    function openFriendModal() {
+      document.getElementById("friendName").value = "";
+      document.getElementById("friendModal").classList.remove("hidden");
+    }
+    function closeFriendModal() {
+      document.getElementById("friendModal").classList.add("hidden");
     }
 
     async function doRegisterFriend() {
-      if (!sessionToken) return showMessage("יש להתחבר", false);
       const friendName = document.getElementById("friendName").value.trim();
       if (!friendName) return showMessage("נא להזין שם חבר", false);
       const btn = document.getElementById("btnRegFriend");
@@ -616,54 +719,40 @@
         const res = await apiCall("registerFriend", { token: sessionToken, friendName });
         showMessage(res.message, res.success);
         if (res.success) {
-          document.getElementById("friendName").value = "";
-          await refreshList();
-          switchTab("list");
+          closeFriendModal();
+          await refreshAll();
         }
       } catch (e) { showMessage("שגיאה בהרשמת חבר", false); }
-      setLoading(btn, false, "הרשמת חבר");
+      setLoading(btn, false, "אישור הרשמה");
     }
 
-    async function loadMyRegs() {
-      if (!sessionToken) return showMessage("יש להתחבר", false);
-      const btn = document.getElementById("btnLoadRegs");
-      setLoading(btn, true);
+    async function cancelOne(id, displayName) {
+      if (!confirm("לבטל את ההרשמה של " + displayName + "?")) return;
       try {
-        const list = await apiCall("getMyRegistrations", { token: sessionToken });
-        const container = document.getElementById("myRegs");
-        if (!list || list.length === 0) {
-          container.innerHTML = `<div class="empty">לא נמצאו הרשמות</div>`;
-          document.getElementById("cancelBtn").classList.add("hidden");
-        } else {
-          container.innerHTML = list.map(r =>
-            `<div class="checkbox-item"><label>
-              <input type="checkbox" value="${r.id}"><span>${r.display}</span>
-            </label></div>`
-          ).join("");
-          document.getElementById("cancelBtn").classList.remove("hidden");
-        }
-        container.classList.remove("hidden");
-      } catch (e) { showMessage("שגיאה בטעינה", false); }
-      setLoading(btn, false, "הצג את ההרשמות שלי");
-    }
-
-    async function doCancel() {
-      if (!sessionToken) return;
-      const checked = [...document.querySelectorAll("#myRegs input:checked")].map(c => c.value);
-      if (!checked.length) return showMessage("נא לבחור לפחות הרשמה אחת", false);
-      const btn = document.getElementById("cancelBtn");
-      setLoading(btn, true);
-      try {
-        const res = await apiCall("cancelRegistrations", { token: sessionToken, ids: checked.join(",") });
+        const res = await apiCall("cancelRegistrations", { token: sessionToken, ids: id });
         showMessage(res.message, res.success);
         if (res.success) {
-          document.getElementById("myRegs").classList.add("hidden");
-          document.getElementById("cancelBtn").classList.add("hidden");
-          await refreshList();
+          await refreshAll();
           showPromoteWhatsApp(res.promoted || []);
         }
-      } catch (e) { showMessage("שגיאה בביטול", false); }
-      setLoading(btn, false, "בטל נבחרים");
+      } catch (e) {
+        showMessage("שגיאה בביטול", false);
+      }
+    }
+
+    function openAdminModal() {
+      document.getElementById("adminModal").classList.remove("hidden");
+      loadMasterSelect();
+      loadAdminList();
+      loadPending();
+    }
+    function closeAdminModal() {
+      document.getElementById("adminModal").classList.add("hidden");
+    }
+    function backdropClose(e, id) {
+      if (e.target.id === id) {
+        document.getElementById(id).classList.add("hidden");
+      }
     }
 
     async function doStartNewWeek() {
@@ -673,7 +762,10 @@
       try {
         const res = await apiCall("startNewWeek", { token: sessionToken });
         showMessage(res.message, res.success);
-        if (res.success) { await refreshList(); switchTab("list"); }
+        if (res.success) {
+          closeAdminModal();
+          await refreshAll();
+        }
       } catch (e) { showMessage("שגיאה", false); }
       setLoading(btn, false, "התחל שבוע חדש");
     }
@@ -698,7 +790,7 @@
     }
 
     async function approvePending(email, name) {
-      if (!confirm("לאשר את " + email + "?\nיתווסף אוטומטית למאסטר.")) return;
+      if (!confirm("לאשר את " + email + "?")) return;
       const res = await apiCall("approvePending", { token: sessionToken, email, name });
       showMessage(res.message, res.success);
       if (res.success) { loadPending(); loadMasterSelect(); }
@@ -746,7 +838,7 @@
         if (res.success) {
           document.getElementById("adminAddName").value = "";
           document.getElementById("adminSelectPlayer").value = "";
-          await refreshList();
+          await refreshAll();
           loadAdminList();
         }
       } catch (e) { showMessage("שגיאה", false); }
@@ -774,16 +866,14 @@
       const res = await apiCall("adminRemove", { token: sessionToken, regId });
       showMessage(res.message, res.success);
       if (res.success) {
-        await refreshList();
+        await refreshAll();
         loadAdminList();
         showPromoteWhatsApp(res.promoted || []);
       }
     }
 
     document.addEventListener("visibilitychange", () => {
-      if (document.visibilityState === "visible" && currentUser && currentTab === "list") {
-        refreshList(true);
-      }
+      if (document.visibilityState === "visible" && currentUser) refreshAll(true);
     });
 
     bootstrap();
