@@ -71,10 +71,31 @@
       justify-content: space-between;
       align-items: center;
       margin-bottom: 6px;
+      gap: 8px;
+    }
+    .title-side {
+      display: flex;
+      align-items: center;
       gap: 6px;
     }
     .card-head h3 { font-size: 0.84rem; font-weight: 600; }
     .head-actions { display: flex; gap: 5px; flex-wrap: wrap; justify-content: flex-end; }
+
+    .btn-icon-copy {
+      width: 28px;
+      height: 28px;
+      border: none;
+      border-radius: 7px;
+      background: #f1f5f9;
+      color: var(--muted);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      flex-shrink: 0;
+    }
+    .btn-icon-copy svg { width: 15px; height: 15px; }
 
     .btn-sm {
       width: auto;
@@ -141,24 +162,32 @@
     .empty { text-align: center; color: var(--muted); padding: 12px 8px; font-size: 0.82rem; }
     .free-spots { text-align: center; margin-top: 6px; font-size: 0.75rem; color: var(--muted); }
 
-    .bottom-actions {
+    .pay-row {
       display: flex;
-      gap: 6px;
-      margin-top: 8px;
+      gap: 10px;
+      margin-top: 4px;
     }
-    .bottom-actions button {
+    .pay-btn {
       flex: 1;
-      padding: 9px 6px;
-      font-size: 0.82rem;
-      border-radius: 10px;
-      border: none;
-      font-weight: 600;
-      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 8px 10px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: #fff;
       cursor: pointer;
+      font-weight: 600;
+      font-size: 0.85rem;
+      color: var(--text);
     }
-    .btn-copy { background: #0f766e; }
-    .btn-bit { background: #00a3e0; }
-    .btn-paybox { background: #6b21a8; }
+    .pay-btn img {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      object-fit: cover;
+    }
 
     button {
       width: 100%;
@@ -246,7 +275,7 @@
       border-top-color: #fff; border-radius: 50%;
       animation: spin 0.7s linear infinite; flex-shrink: 0;
     }
-    .btn-refresh .spinner, .btn-gray .spinner {
+    .btn-refresh .spinner, .btn-gray .spinner, .btn-icon-copy .spinner {
       border-color: rgba(37,99,235,0.25); border-top-color: var(--primary);
     }
     @keyframes spin { to { transform: rotate(360deg); } }
@@ -300,7 +329,15 @@
 
       <div class="card">
         <div class="card-head">
-          <h3>רשימת המשחק</h3>
+          <div class="title-side">
+            <h3>רשימת המשחק</h3>
+            <button class="btn-icon-copy" id="btnCopy" onclick="copyList()" title="העתק רשימה">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+            </button>
+          </div>
           <div class="head-actions">
             <button class="btn-sm btn-refresh" id="btnRefresh" onclick="manualRefresh()">↻</button>
             <button class="btn-sm btn-reg" id="btnRegSelf" onclick="doRegisterSelf()">+ הרשמה</button>
@@ -316,10 +353,17 @@
         <div class="list" id="waitlist"><div class="empty">טוען...</div></div>
       </div>
 
-      <div class="bottom-actions">
-        <button class="btn-copy" onclick="copyList()">העתק</button>
-        <button class="btn-bit" onclick="openBit()">Bit</button>
-        <button class="btn-paybox" onclick="openPayBox()">PayBox</button>
+      <div class="card">
+        <div class="pay-row">
+          <button class="pay-btn" onclick="openBit()">
+            <img src="https://is1-ssl.mzstatic.com/image/thumb/PurpleSource221/v4/92/ae/b1/92aeb103-d961-c3e5-9bb5-16a4cfe65b2f/Placeholder.mill/200x200bb-75.webp" alt="Bit">
+            <span>Bit</span>
+          </button>
+          <button class="pay-btn" onclick="openPayBox()">
+            <img src="https://is1-ssl.mzstatic.com/image/thumb/PurpleSource211/v4/12/06/b0/1206b081-574f-ac46-551d-ba5c4378cecd/Placeholder.mill/200x200bb-75.webp" alt="PayBox">
+            <span>PayBox</span>
+          </button>
+        </div>
       </div>
     </div>
   </div>
