@@ -322,26 +322,25 @@
     let autoRefreshTimer = null;
     let adminUiReady = false;
 
-    async function apiCall(action, params = {}) {
-      const body = new URLSearchParams();
-      body.set("action", action);
-      for (const key in params) {
-        if (params[key] !== undefined && params[key] !== null) {
-          body.set(key, params[key]);
-        }
-      }
-      const res = await fetch(API_URL, {
-        method: "POST",
-        redirect: "follow",
-        body
-      });
-      const text = await res.text();
-      try { return JSON.parse(text); }
-      catch (e) {
-        console.error("Not JSON:", text);
-        throw new Error("תשובה לא תקינה מהשרת");
-      }
+async function apiCall(action, params = {}) {
+  const url = new URL(API_URL);
+  url.searchParams.set("action", action);
+  for (const key in params) {
+    if (params[key] !== undefined && params[key] !== null) {
+      url.searchParams.set(key, params[key]);
     }
+  }
+  const res = await fetch(url.toString(), {
+    method: "GET",
+    redirect: "follow"
+  });
+  const text = await res.text();
+  try { return JSON.parse(text); }
+  catch (e) {
+    console.error("Not JSON:", text);
+    throw new Error("תשובה לא תקינה מהשרת");
+  }
+}
 
     function setLoading(btn, loading, defaultText) {
       if (!btn) return;
