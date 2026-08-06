@@ -73,41 +73,21 @@
       margin-bottom: 6px;
       gap: 8px;
     }
-    .title-side {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
+    .title-side { display: flex; align-items: center; gap: 6px; }
     .card-head h3 { font-size: 0.84rem; font-weight: 600; }
     .head-actions { display: flex; gap: 5px; flex-wrap: wrap; justify-content: flex-end; }
 
     .btn-icon-copy {
-      width: 28px;
-      height: 28px;
-      border: none;
-      border-radius: 7px;
-      background: #f1f5f9;
-      color: var(--muted);
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0;
-      flex-shrink: 0;
+      width: 28px; height: 28px; border: none; border-radius: 7px;
+      background: #f1f5f9; color: var(--muted); cursor: pointer;
+      display: inline-flex; align-items: center; justify-content: center; padding: 0; flex-shrink: 0;
     }
     .btn-icon-copy svg { width: 15px; height: 15px; }
 
     .btn-sm {
-      width: auto;
-      padding: 5px 8px;
-      font-size: 0.74rem;
-      border-radius: 7px;
-      border: none;
-      font-weight: 600;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 3px;
+      width: auto; padding: 5px 8px; font-size: 0.74rem; border-radius: 7px;
+      border: none; font-weight: 600; cursor: pointer;
+      display: inline-flex; align-items: center; gap: 3px;
     }
     .btn-sm:disabled { opacity: 0.55; cursor: not-allowed; }
     .btn-refresh { background: #eff6ff; color: var(--primary); }
@@ -116,91 +96,41 @@
 
     .list { display: flex; flex-direction: column; gap: 0; }
     .list-item {
-      display: flex;
-      align-items: center;
-      position: relative;
-      padding: 3px 6px 3px 34px;
-      font-size: 0.8rem;
-      min-height: 28px;
-      border-bottom: 1px solid #eef2f7;
-      gap: 6px;
+      display: flex; align-items: center; position: relative;
+      padding: 3px 6px 3px 34px; font-size: 0.8rem; min-height: 28px;
+      border-bottom: 1px solid #eef2f7; gap: 6px;
     }
     .list-item:last-child { border-bottom: none; }
     .list-item .num {
-      font-weight: 700;
-      color: var(--primary);
-      min-width: 18px;
-      text-align: right;
-      font-size: 0.78rem;
+      font-weight: 700; color: var(--primary); min-width: 18px;
+      text-align: right; font-size: 0.78rem;
     }
     .list-item .name {
-      flex: 1;
-      text-align: right;
-      min-width: 0;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
+      flex: 1; text-align: right; min-width: 0;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
     }
     .btn-minus {
-      position: absolute;
-      left: 4px;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      border: none;
-      background: #fee2e2;
-      color: var(--danger);
-      font-size: 1rem;
-      font-weight: 700;
-      line-height: 1;
-      padding: 0;
-      cursor: pointer;
+      position: absolute; left: 4px; top: 50%; transform: translateY(-50%);
+      width: 24px; height: 24px; border-radius: 50%; border: none;
+      background: #fee2e2; color: var(--danger); font-size: 1rem;
+      font-weight: 700; line-height: 1; padding: 0; cursor: pointer;
     }
 
     .empty { text-align: center; color: var(--muted); padding: 12px 8px; font-size: 0.82rem; }
     .free-spots { text-align: center; margin-top: 6px; font-size: 0.75rem; color: var(--muted); }
 
-    .pay-row {
-      display: flex;
-      gap: 10px;
-      margin-top: 4px;
-    }
+    .pay-row { display: flex; gap: 10px; margin-top: 4px; }
     .pay-btn {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      padding: 8px 10px;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      background: #fff;
-      cursor: pointer;
-      font-weight: 600;
-      font-size: 0.85rem;
-      color: var(--text);
+      flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 8px 10px; border: 1px solid var(--border); border-radius: 12px;
+      background: #fff; cursor: pointer; font-weight: 600; font-size: 0.85rem; color: var(--text);
     }
-    .pay-btn img {
-      width: 28px;
-      height: 28px;
-      border-radius: 6px;
-      object-fit: cover;
-    }
+    .pay-btn img { width: 28px; height: 28px; border-radius: 6px; object-fit: cover; }
 
     button {
-      width: 100%;
-      padding: 12px;
-      font-size: 0.95rem;
-      font-weight: 600;
-      border: none;
-      border-radius: 12px;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
+      width: 100%; padding: 12px; font-size: 0.95rem; font-weight: 600;
+      border: none; border-radius: 12px; cursor: pointer;
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
     }
     button:disabled { opacity: 0.65; cursor: not-allowed; }
     .btn-primary { background: var(--primary); color: #fff; }
@@ -242,29 +172,21 @@
 
     .modal-overlay {
       position: fixed; inset: 0; background: rgba(15,23,42,0.45);
-      z-index: 100; display: flex; align-items: flex-end; justify-content: center;
-      padding: 12px;
+      z-index: 100; display: flex; align-items: flex-end; justify-content: center; padding: 12px;
     }
     .modal {
       background: #fff; width: 100%; max-width: 480px; max-height: 88vh;
       border-radius: 16px 16px 12px 12px; overflow: auto; padding: 16px;
     }
-    .modal-head {
-      display: flex; justify-content: space-between; align-items: center;
-      margin-bottom: 12px;
-    }
+    .modal-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
     .modal-head h3 { font-size: 1rem; }
     .modal-close {
       width: auto; padding: 4px 10px; background: #f1f5f9; color: var(--text);
       border-radius: 8px; font-size: 0.85rem;
     }
     .admin-section { background: #fffbeb; border: 1.5px dashed #f59e0b; }
-    .admin-list-item, .pending-item {
-      padding: 8px 0; border-bottom: 1px solid #f1f5f9; font-size: 0.9rem;
-    }
-    .admin-list-item {
-      display: flex; justify-content: space-between; align-items: center; gap: 6px;
-    }
+    .admin-list-item, .pending-item { padding: 8px 0; border-bottom: 1px solid #f1f5f9; font-size: 0.9rem; }
+    .admin-list-item { display: flex; justify-content: space-between; align-items: center; gap: 6px; }
     .admin-list-item button, .pending-item .actions button {
       width: auto; padding: 6px 10px; font-size: 0.8rem; border-radius: 8px;
     }
@@ -381,39 +303,11 @@
     </div>
   </div>
 
-  <div id="adminModal" class="modal-overlay hidden" onclick="backdropClose(event,'adminModal')">
-    <div class="modal admin-section">
-      <div class="modal-head">
-        <h3>ניהול</h3>
-        <button class="modal-close" onclick="closeAdminModal()">סגור</button>
-      </div>
-
-      <button class="btn-admin" id="btnNewWeek" onclick="doStartNewWeek()" style="margin-bottom:12px;">התחל שבוע חדש</button>
-
-      <h3 style="font-size:0.88rem;margin:10px 0 8px;color:#b45309;">בקשות הצטרפות</h3>
-      <div id="pendingList"><div class="empty">טוען...</div></div>
-      <button class="btn-gray" onclick="loadPending()" style="margin-top:8px;">רענן בקשות</button>
-
-      <hr style="margin:14px 0;border:none;border-top:1px solid #f0e0c0;">
-      <h3 style="font-size:0.88rem;margin-bottom:8px;color:#b45309;">הוספת שחקן</h3>
-      <div class="form-group">
-        <select id="adminSelectPlayer" onchange="onAdminSelectChange()">
-          <option value="">-- בחר מהמאסטר --</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <input type="text" id="adminAddName" placeholder="או הזן שם חופשי">
-      </div>
-      <button class="btn-secondary" id="btnAdminAdd" onclick="adminAddPlayer()" style="margin-bottom:12px;">הוסף שחקן</button>
-
-      <h3 style="font-size:0.88rem;margin-bottom:8px;color:#b45309;">הסרת שחקן</h3>
-      <div id="adminRemoveList"><div class="empty">לחץ רענן</div></div>
-      <button class="btn-gray" onclick="loadAdminList()" style="margin-top:8px;">רענן רשימה להסרה</button>
-    </div>
-  </div>
+  <!-- פאנל ניהול נוצר דינמית רק לאדמין -->
+  <div id="adminHost"></div>
 
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbx5vNGUUK6TfAzZwNXGkTR6SUo2UfI-AVbK0VCFywwkuN2gJqL2MrJSI1ag69PWDuA/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycby1DpittiGitgI8zZ7CoFgTeMojfWShWNUShpJFFTooe3lMblvrfoqgGUTbEBw7Eixn/exec";
     const STORAGE_KEY = "basket_session_v1";
     const AUTO_REFRESH_MS = 40000;
 
@@ -426,16 +320,21 @@
     let googleClientId = "";
     let googleInitDone = false;
     let autoRefreshTimer = null;
+    let adminUiReady = false;
 
     async function apiCall(action, params = {}) {
-      const url = new URL(API_URL);
-      url.searchParams.set("action", action);
+      const body = new URLSearchParams();
+      body.set("action", action);
       for (const key in params) {
         if (params[key] !== undefined && params[key] !== null) {
-          url.searchParams.set(key, params[key]);
+          body.set(key, params[key]);
         }
       }
-      const res = await fetch(url.toString(), { method: "GET", redirect: "follow", mode: "cors" });
+      const res = await fetch(API_URL, {
+        method: "POST",
+        redirect: "follow",
+        body
+      });
       const text = await res.text();
       try { return JSON.parse(text); }
       catch (e) {
@@ -488,12 +387,50 @@
       box.classList.remove("hidden");
     }
 
+    function ensureAdminUI() {
+      if (adminUiReady || !currentUser || !currentUser.isAdmin) return;
+      document.getElementById("adminHost").innerHTML = `
+        <div id="adminModal" class="modal-overlay hidden" onclick="backdropClose(event,'adminModal')">
+          <div class="modal admin-section">
+            <div class="modal-head">
+              <h3>ניהול</h3>
+              <button class="modal-close" onclick="closeAdminModal()">סגור</button>
+            </div>
+            <button class="btn-admin" id="btnNewWeek" onclick="doStartNewWeek()" style="margin-bottom:12px;">התחל שבוע חדש</button>
+            <h3 style="font-size:0.88rem;margin:10px 0 8px;color:#b45309;">בקשות הצטרפות</h3>
+            <div id="pendingList"><div class="empty">טוען...</div></div>
+            <button class="btn-gray" onclick="loadPending()" style="margin-top:8px;">רענן בקשות</button>
+            <hr style="margin:14px 0;border:none;border-top:1px solid #f0e0c0;">
+            <h3 style="font-size:0.88rem;margin-bottom:8px;color:#b45309;">הוספת שחקן</h3>
+            <div class="form-group">
+              <select id="adminSelectPlayer" onchange="onAdminSelectChange()">
+                <option value="">-- בחר מהמאסטר --</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <input type="text" id="adminAddName" placeholder="או הזן שם חופשי">
+            </div>
+            <button class="btn-secondary" id="btnAdminAdd" onclick="adminAddPlayer()" style="margin-bottom:12px;">הוסף שחקן</button>
+            <h3 style="font-size:0.88rem;margin-bottom:8px;color:#b45309;">הסרת שחקן</h3>
+            <div id="adminRemoveList"><div class="empty">לחץ רענן</div></div>
+            <button class="btn-gray" onclick="loadAdminList()" style="margin-top:8px;">רענן רשימה להסרה</button>
+          </div>
+        </div>`;
+      adminUiReady = true;
+    }
+
     function showApp() {
       document.getElementById("loginScreen").classList.add("hidden");
       document.getElementById("appScreen").classList.remove("hidden");
       document.getElementById("userName").textContent = currentUser.name;
-      if (currentUser.isAdmin) document.getElementById("btnGear").classList.remove("hidden");
-      else document.getElementById("btnGear").classList.add("hidden");
+      if (currentUser.isAdmin) {
+        document.getElementById("btnGear").classList.remove("hidden");
+        ensureAdminUI();
+      } else {
+        document.getElementById("btnGear").classList.add("hidden");
+        document.getElementById("adminHost").innerHTML = "";
+        adminUiReady = false;
+      }
       refreshAll();
       startAutoRefresh();
     }
@@ -502,6 +439,8 @@
       stopAutoRefresh();
       document.getElementById("loginScreen").classList.remove("hidden");
       document.getElementById("appScreen").classList.add("hidden");
+      document.getElementById("adminHost").innerHTML = "";
+      adminUiReady = false;
       currentUser = null;
       sessionToken = "";
       localStorage.removeItem(STORAGE_KEY);
@@ -677,11 +616,8 @@
         document.getElementById("freeSpots").textContent =
           `פנויים: ${data.freeSpots} / ${data.maxPlayers}`;
 
-        if (data.friendRegistrationOpen) {
-          document.getElementById("btnFriend").classList.remove("hidden");
-        } else {
-          document.getElementById("btnFriend").classList.add("hidden");
-        }
+        if (data.friendRegistrationOpen) document.getElementById("btnFriend").classList.remove("hidden");
+        else document.getElementById("btnFriend").classList.add("hidden");
 
         updateRegButtonState();
       } catch (e) {
@@ -800,13 +736,16 @@
     }
 
     function openAdminModal() {
+      if (!currentUser || !currentUser.isAdmin) return;
+      ensureAdminUI();
       document.getElementById("adminModal").classList.remove("hidden");
       loadMasterSelect();
       loadAdminList();
       loadPending();
     }
     function closeAdminModal() {
-      document.getElementById("adminModal").classList.add("hidden");
+      const m = document.getElementById("adminModal");
+      if (m) m.classList.add("hidden");
     }
     function backdropClose(e, id) {
       if (e.target.id === id) document.getElementById(id).classList.add("hidden");
@@ -830,6 +769,7 @@
     async function loadPending() {
       const res = await apiCall("getPendingUsers", { token: sessionToken });
       const container = document.getElementById("pendingList");
+      if (!container) return;
       if (!res.success || !res.list || !res.list.length) {
         container.innerHTML = `<div class="empty">אין בקשות ממתינות</div>`;
         return;
@@ -863,6 +803,7 @@
     async function loadMasterSelect() {
       const res = await apiCall("getMasterList", { token: sessionToken });
       const select = document.getElementById("adminSelectPlayer");
+      if (!select) return;
       select.innerHTML = `<option value="">-- בחר מהמאסטר --</option>`;
       if (res.success && res.list) {
         res.list.forEach(p => {
@@ -906,6 +847,7 @@
       const data = await apiCall("getAdminList", { token: sessionToken });
       const all = [...(data.main || []), ...(data.waitlist || [])];
       const container = document.getElementById("adminRemoveList");
+      if (!container) return;
       if (!all.length) {
         container.innerHTML = `<div class="empty">אין שחקנים</div>`;
         return;
