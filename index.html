@@ -114,6 +114,7 @@
       width: 24px; height: 24px; border-radius: 50%; border: none;
       background: #fee2e2; color: var(--danger); font-size: 1rem;
       font-weight: 700; line-height: 1; padding: 0; cursor: pointer;
+      z-index: 2;
     }
 
     .empty { text-align: center; color: var(--muted); padding: 12px 8px; font-size: 0.82rem; }
@@ -303,7 +304,6 @@
     </div>
   </div>
 
-  <!-- פאנל ניהול נוצר דינמית רק לאדמין -->
   <div id="adminHost"></div>
 
   <script>
@@ -322,25 +322,22 @@
     let autoRefreshTimer = null;
     let adminUiReady = false;
 
-async function apiCall(action, params = {}) {
-  const url = new URL(API_URL);
-  url.searchParams.set("action", action);
-  for (const key in params) {
-    if (params[key] !== undefined && params[key] !== null) {
-      url.searchParams.set(key, params[key]);
+    async function apiCall(action, params = {}) {
+      const url = new URL(API_URL);
+      url.searchParams.set("action", action);
+      for (const key in params) {
+        if (params[key] !== undefined && params[key] !== null) {
+          url.searchParams.set(key, params[key]);
+        }
+      }
+      const res = await fetch(url.toString(), { method: "GET", redirect: "follow" });
+      const text = await res.text();
+      try { return JSON.parse(text); }
+      catch (e) {
+        console.error("Not JSON:", text);
+        throw new Error("תשובה לא תקינה מהשרת");
+      }
     }
-  }
-  const res = await fetch(url.toString(), {
-    method: "GET",
-    redirect: "follow"
-  });
-  const text = await res.text();
-  try { return JSON.parse(text); }
-  catch (e) {
-    console.error("Not JSON:", text);
-    throw new Error("תשובה לא תקינה מהשרת");
-  }
-}
 
     function setLoading(btn, loading, defaultText) {
       if (!btn) return;
@@ -579,14 +576,22 @@ async function apiCall(action, params = {}) {
       return items.map(r => {
         const canCancel = !!myRegMap[r.id];
         const minus = canCancel
-          ? `<button class="btn-minus" title="ביטול" onclick="cancelOne('${r.id}', '${String(r.display).replace(/'/g, "\\'")}')">−</button>`
+          ? `<button type="button" class="btn-minus" title="ביטול" data-id="${r.id}">−</button>`
           : "";
         return `<div class="list-item">
           <span class="num">${r.position}.</span>
-          <span class="name">${r.display}</span>
+          <span class="name">${escapeHtml(r.display)}</span>
           ${minus}
         </div>`;
       }).join("");
+    }
+
+    function escapeHtml(str) {
+      return String(str || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
     }
 
     async function refreshList(silent) {
@@ -720,7 +725,8 @@ async function apiCall(action, params = {}) {
       setLoading(btn, false, "אישור הרשמה");
     }
 
-    async function cancelOne(id, displayName) {
+    async function cancelOne(id) {
+      const displayName = myRegMap[id] || "ההרשמה";
       if (!confirm("לבטל את ההרשמה של " + displayName + "?")) return;
       try {
         const res = await apiCall("cancelRegistrations", { token: sessionToken, ids: id });
@@ -775,11 +781,11 @@ async function apiCall(action, params = {}) {
       }
       container.innerHTML = res.list.map(p => `
         <div class="pending-item">
-          <div><strong>${p.name}</strong></div>
-          <div style="color:#64748b;font-size:0.8rem;">${p.email} · ${p.source} · ${p.requested_at}</div>
+          <div><strong>${escapeHtml(p.name)}</strong></div>
+          <div style="color:#64748b;font-size:0.8rem;">${escapeHtml(p.email)} · ${escapeHtml(p.source)} · ${escapeHtml(p.requested_at)}</div>
           <div class="actions">
-            <button class="btn-secondary" onclick="approvePending('${p.email}', '${(p.name || '').replace(/'/g, "\\'")}')">אשר</button>
-            <button class="btn-danger" onclick="rejectPending('${p.email}')">דחה</button>
+            <button class="btn-secondary" data-approve-email="${escapeHtml(p.email)}" data-approve-name="${escapeHtml(p.name)}">אשר</button>
+            <button class="btn-danger" data-reject-email="${escapeHtml(p.email)}">דחה</button>
           </div>
         </div>
       `).join("");
@@ -807,7 +813,10 @@ async function apiCall(action, params = {}) {
       if (res.success && res.list) {
         res.list.forEach(p => {
           const symbol = p.symbol ? " " + p.symbol : "";
-          select.innerHTML += `<option value="${p.email}|${p.name}">${p.name}${symbol}</option>`;
+          const opt = document.createElement("option");
+          opt.value = p.email + "|" + p.name;
+          opt.textContent = p.name + symbol;
+          select.appendChild(opt);
         });
       }
     }
@@ -853,8 +862,8 @@ async function apiCall(action, params = {}) {
       }
       container.innerHTML = all.map(r =>
         `<div class="admin-list-item">
-          <span>${r.display}</span>
-          <button class="btn-danger" onclick="adminRemovePlayer('${r.id}')">הסר</button>
+          <span>${escapeHtml(r.display)}</span>
+          <button class="btn-danger" data-admin-remove="${r.id}">הסר</button>
         </div>`
       ).join("");
     }
@@ -869,6 +878,29 @@ async function apiCall(action, params = {}) {
         showPromoteWhatsApp(res.promoted || []);
       }
     }
+
+    document.addEventListener("click", function (e) {
+      const minus = e.target.closest(".btn-minus");
+      if (minus) {
+        const id = minus.getAttribute("data-id");
+        if (id) cancelOne(id);
+        return;
+      }
+      const approveBtn = e.target.closest("[data-approve-email]");
+      if (approveBtn) {
+        approvePending(approveBtn.getAttribute("data-approve-email"), approveBtn.getAttribute("data-approve-name") || "");
+        return;
+      }
+      const rejectBtn = e.target.closest("[data-reject-email]");
+      if (rejectBtn) {
+        rejectPending(rejectBtn.getAttribute("data-reject-email"));
+        return;
+      }
+      const adminRemoveBtn = e.target.closest("[data-admin-remove]");
+      if (adminRemoveBtn) {
+        adminRemovePlayer(adminRemoveBtn.getAttribute("data-admin-remove"));
+      }
+    });
 
     document.addEventListener("visibilitychange", () => {
       if (document.visibilityState === "visible" && currentUser) refreshAll(true);
