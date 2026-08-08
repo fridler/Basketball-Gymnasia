@@ -63,6 +63,9 @@
       border-radius: 20px;
       padding: 1px 8px;
       font-weight: 600;
+      direction: ltr;
+      unicode-bidi: isolate;
+      display: inline-block;
     }
     .balance-pill.debt { background: rgba(220,38,38,0.35); }
     .container { padding: 8px; max-width: 480px; margin: 0 auto; }
@@ -200,7 +203,11 @@
       width: auto; padding: 6px 10px; font-size: 0.8rem; border-radius: 8px;
     }
     .pending-item .actions { display: flex; gap: 6px; margin-top: 6px; }
-    .debt-amount { font-size: 1.6rem; font-weight: 700; color: var(--danger); text-align: center; margin: 8px 0 12px; }
+    .debt-amount {
+      font-size: 1.6rem; font-weight: 700; color: var(--danger);
+      text-align: center; margin: 8px 0 12px;
+      direction: ltr; unicode-bidi: isolate;
+    }
 
     .spinner {
       width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.35);
@@ -341,7 +348,6 @@
   <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbwhkXrFfHENfI0Os_UpmUcAD98_98zDVnB25ktl5coJDk57KGqdqXggMbPB-vJMwsEr/exec";
     const STORAGE_KEY = "basket_session_v1";
-    const DEBT_POPUP_KEY = "basket_debt_popup_shown";
     const AUTO_REFRESH_MS = 40000;
 
     let sessionToken = localStorage.getItem(STORAGE_KEY) || "";
@@ -401,10 +407,10 @@
     }
 
     function formatBalance(bal) {
-      if (bal === null || bal === undefined || isNaN(bal)) return null;
+      if (bal === null || bal === undefined || isNaN(Number(bal))) return null;
       const n = Number(bal);
-      const sign = n > 0 ? "+" : "";
-      return sign + n + "₪";
+      if (n > 0) return "+" + n + "₪";
+      return n + "₪";
     }
 
     function updateBalanceUI() {
@@ -420,11 +426,10 @@
       else el.classList.remove("debt");
     }
 
-    function maybeShowDebtPopup() {
+    function showDebtPopupIfNeeded() {
       if (!currentUser) return;
       if (currentUser.balance === null || currentUser.balance === undefined) return;
       if (Number(currentUser.balance) >= 0) return;
-      if (sessionStorage.getItem(DEBT_POPUP_KEY) === currentUser.email) return;
 
       const abs = Math.abs(Number(currentUser.balance));
       document.getElementById("debtAmountText").textContent = "-" + abs + "₪";
@@ -435,7 +440,6 @@
         hint.textContent = "אפשר להירשם, אך מומלץ להסדיר את החוב.";
       }
       document.getElementById("debtModal").classList.remove("hidden");
-      sessionStorage.setItem(DEBT_POPUP_KEY, currentUser.email);
     }
 
     function closeDebtModal() {
@@ -497,7 +501,7 @@
       updateBalanceUI();
     }
 
-    function showApp(fromFreshLogin) {
+    function showApp(showDebt) {
       document.getElementById("loginScreen").classList.add("hidden");
       document.getElementById("appScreen").classList.remove("hidden");
       document.getElementById("userName").textContent = currentUser.name;
@@ -512,7 +516,7 @@
       }
       refreshAll();
       startAutoRefresh();
-      if (fromFreshLogin) maybeShowDebtPopup();
+      if (showDebt) showDebtPopupIfNeeded();
     }
 
     function showLogin() {
@@ -527,7 +531,6 @@
     }
 
     function logout() {
-      sessionStorage.removeItem(DEBT_POPUP_KEY);
       showLogin();
       initGoogleButton();
     }
@@ -547,6 +550,7 @@
       setLoading(btn, true);
       await refreshAll();
       setLoading(btn, false, "↻");
+      showDebtPopupIfNeeded();
     }
 
     async function refreshAll(silent) {
@@ -567,7 +571,7 @@
         const res = await apiCall("validateSession", { token: sessionToken });
         if (res.success && res.user) {
           applyUserFromServer(res.user);
-          showApp(false);
+          showApp(true);
           return;
         }
       }
