@@ -307,7 +307,7 @@
   <div id="adminHost"></div>
 
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbyZuFOtClSBT_2ygEpKhGSrxpRUgaZAGj-tq6-FOeAbc9b2Lm2CTV6jtoM-R5Z3jnZO/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbwLLDUx9vqT-gEsb53pSM4ZqAnOkE7O_lSQdz9MirLysPQv8eANtJ-MK4djkG4uv_Bm/exec";
     const STORAGE_KEY = "basket_session_v1";
     const AUTO_REFRESH_MS = 40000;
 
@@ -573,8 +573,9 @@
 
     function renderListItems(items) {
       if (!items || !items.length) return `<div class="empty">ריק</div>`;
+      const locked = !!(lastListData && lastListData.isLocked);
       return items.map(r => {
-        const canCancel = !!myRegMap[r.id];
+        const canCancel = !!myRegMap[r.id] && !locked;
         const minus = canCancel
           ? `<button type="button" class="btn-minus" title="ביטול" data-id="${r.id}">−</button>`
           : "";
@@ -611,7 +612,7 @@
         }
 
         document.getElementById("gameInfo").textContent =
-          `משחק בתאריך ${data.gameDate}` + (data.isLocked ? " • סגור" : "");
+          `משחק בתאריך ${data.gameDate}` + (data.isLocked ? " • סגור להרשמה" : "");
 
         document.getElementById("mainList").innerHTML = renderListItems(data.main);
         document.getElementById("waitlist").innerHTML =
@@ -690,6 +691,7 @@
 
     async function doRegisterSelf() {
       if (!sessionToken) return showMessage("יש להתחבר", false);
+      if (lastListData && lastListData.isLocked) return showMessage("ההרשמה נסגרה", false);
       const btn = document.getElementById("btnRegSelf");
       setLoading(btn, true);
       try {
@@ -698,10 +700,13 @@
         if (res.success) await refreshAll();
       } catch (e) { showMessage("שגיאה בהרשמה", false); }
       updateRegButtonState();
-      if (!isSelfRegistered()) setLoading(btn, false, "+ הרשמה");
+      if (!isSelfRegistered() && !(lastListData && lastListData.isLocked)) {
+        setLoading(btn, false, "+ הרשמה");
+      }
     }
 
     function openFriendModal() {
+      if (lastListData && lastListData.isLocked) return showMessage("ההרשמה נסגרה", false);
       document.getElementById("friendName").value = "";
       document.getElementById("friendModal").classList.remove("hidden");
     }
@@ -710,6 +715,7 @@
     }
 
     async function doRegisterFriend() {
+      if (lastListData && lastListData.isLocked) return showMessage("ההרשמה נסגרה", false);
       const friendName = document.getElementById("friendName").value.trim();
       if (!friendName) return showMessage("נא להזין שם חבר", false);
       const btn = document.getElementById("btnRegFriend");
@@ -726,6 +732,7 @@
     }
 
     async function cancelOne(id) {
+      if (lastListData && lastListData.isLocked) return showMessage("ההרשמה נסגרה", false);
       const displayName = myRegMap[id] || "ההרשמה";
       if (!confirm("לבטל את ההרשמה של " + displayName + "?")) return;
       try {
