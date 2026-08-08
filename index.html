@@ -88,12 +88,13 @@
     .card-head h3 { font-size: 0.84rem; font-weight: 600; }
     .head-actions { display: flex; gap: 5px; flex-wrap: wrap; justify-content: flex-end; }
 
-    .btn-icon-copy {
+    .btn-icon-copy, .btn-icon-teams {
       width: 28px; height: 28px; border: none; border-radius: 7px;
       background: #f1f5f9; color: var(--muted); cursor: pointer;
       display: inline-flex; align-items: center; justify-content: center; padding: 0; flex-shrink: 0;
+      font-size: 0.95rem;
     }
-    .btn-icon-copy svg { width: 15px; height: 15px; }
+    .btn-icon-copy svg, .btn-icon-teams svg { width: 15px; height: 15px; }
 
     .btn-sm {
       width: auto; padding: 5px 8px; font-size: 0.74rem; border-radius: 7px;
@@ -209,6 +210,23 @@
       direction: ltr; unicode-bidi: isolate;
     }
 
+    .team-pick-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 4px; border-bottom: 1px solid #f1f5f9; font-size: 0.9rem;
+    }
+    .team-pick-item input { width: auto; accent-color: var(--primary); }
+    .team-count { text-align: center; font-size: 0.85rem; color: var(--muted); margin: 8px 0; }
+    .teams-result { display: flex; gap: 10px; margin-top: 12px; }
+    .team-box {
+      flex: 1; border-radius: 12px; padding: 10px; min-height: 120px;
+    }
+    .team-light { background: #f8fafc; border: 1.5px solid #cbd5e1; }
+    .team-dark { background: #1e293b; border: 1.5px solid #0f172a; color: #f8fafc; }
+    .team-box h4 { font-size: 0.9rem; margin-bottom: 8px; text-align: center; }
+    .team-box ol { padding-right: 18px; font-size: 0.85rem; line-height: 1.6; }
+    .teams-actions { display: flex; gap: 8px; margin-top: 12px; }
+    .teams-actions button { flex: 1; }
+
     .spinner {
       width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.35);
       border-top-color: #fff; border-radius: 50%;
@@ -277,6 +295,7 @@
                 <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
               </svg>
             </button>
+            <button class="btn-icon-teams" id="btnTeams" onclick="openTeamsModal()" title="חלוקה לקבוצות">🎲</button>
           </div>
           <div class="head-actions">
             <button class="btn-sm btn-refresh" id="btnRefresh" onclick="manualRefresh()">↻</button>
@@ -343,6 +362,35 @@
     </div>
   </div>
 
+  <div id="teamsModal" class="modal-overlay hidden" onclick="backdropClose(event,'teamsModal')">
+    <div class="modal">
+      <div class="modal-head">
+        <h3>חלוקה לקבוצות</h3>
+        <button class="modal-close" onclick="closeTeamsModal()">סגור</button>
+      </div>
+      <p class="status-text" style="margin-bottom:8px;">בחר בדיוק 10 שחקנים מרשימת המשחק</p>
+      <div class="team-count" id="teamPickCount">נבחרו: 0 / 10</div>
+      <div id="teamPickList"></div>
+      <button class="btn-primary" id="btnSplitTeams" onclick="splitTeams()" style="margin-top:12px;">חלק לקבוצות</button>
+      <div id="teamsResult" class="hidden">
+        <div class="teams-result">
+          <div class="team-box team-light">
+            <h4>⚪ בהיר</h4>
+            <ol id="teamLight"></ol>
+          </div>
+          <div class="team-box team-dark">
+            <h4>⚫ כהה</h4>
+            <ol id="teamDark"></ol>
+          </div>
+        </div>
+        <div class="teams-actions">
+          <button class="btn-secondary" onclick="reshuffleTeams()">ערבב שוב</button>
+          <button class="btn-gray" onclick="backToTeamPick()">בחירה מחדש</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div id="adminHost"></div>
 
   <script>
@@ -361,6 +409,7 @@
     let autoRefreshTimer = null;
     let adminUiReady = false;
     let maxDebt = 70;
+    let selectedTeamPlayers = [];
 
     async function apiCall(action, params = {}) {
       const url = new URL(API_URL);
@@ -419,8 +468,7 @@
         el.classList.add("hidden");
         return;
       }
-      const text = formatBalance(currentUser.balance);
-      el.textContent = text;
+      el.textContent = formatBalance(currentUser.balance);
       el.classList.remove("hidden");
       if (Number(currentUser.balance) < 0) el.classList.add("debt");
       else el.classList.remove("debt");
@@ -430,7 +478,6 @@
       if (!currentUser) return;
       if (currentUser.balance === null || currentUser.balance === undefined) return;
       if (Number(currentUser.balance) >= 0) return;
-
       const abs = Math.abs(Number(currentUser.balance));
       document.getElementById("debtAmountText").textContent = "-" + abs + "₪";
       const hint = document.getElementById("debtBlockHint");
@@ -461,6 +508,97 @@
         return `<a class="btn-wa" href="https://wa.me/${p.wa}?text=${text}" target="_blank">שלח בוואטסאפ ל־${p.name}</a>`;
       }).join("");
       box.classList.remove("hidden");
+    }
+
+    // ----- Teams -----
+    function openTeamsModal() {
+      if (!lastListData || lastListData.error || !lastListData.main || lastListData.main.length < 10) {
+        return showMessage("צריך לפחות 10 שחקנים ברשימת המשחק", false);
+      }
+      selectedTeamPlayers = [];
+      document.getElementById("teamsResult").classList.add("hidden");
+      document.getElementById("btnSplitTeams").classList.remove("hidden");
+      document.getElementById("teamPickList").classList.remove("hidden");
+      renderTeamPickList();
+      document.getElementById("teamsModal").classList.remove("hidden");
+    }
+
+    function closeTeamsModal() {
+      document.getElementById("teamsModal").classList.add("hidden");
+    }
+
+    function renderTeamPickList() {
+      const list = lastListData.main || [];
+      const wrap = document.getElementById("teamPickList");
+      wrap.innerHTML = list.map((r, idx) => `
+        <label class="team-pick-item">
+          <input type="checkbox" value="${idx}" data-name="${escapeHtml(r.display)}" onchange="onTeamPickChange()">
+          <span>${r.position}. ${escapeHtml(r.display)}</span>
+        </label>
+      `).join("");
+      updateTeamPickCount();
+    }
+
+    function onTeamPickChange() {
+      const boxes = document.querySelectorAll("#teamPickList input[type=checkbox]");
+      const checked = [...boxes].filter(b => b.checked);
+      if (checked.length > 10) {
+        checked[checked.length - 1].checked = false;
+        showMessage("אפשר לבחור עד 10 שחקנים", false);
+      }
+      updateTeamPickCount();
+    }
+
+    function updateTeamPickCount() {
+      const n = document.querySelectorAll("#teamPickList input[type=checkbox]:checked").length;
+      document.getElementById("teamPickCount").textContent = "נבחרו: " + n + " / 10";
+    }
+
+    function getSelectedNames() {
+      return [...document.querySelectorAll("#teamPickList input[type=checkbox]:checked")]
+        .map(b => b.getAttribute("data-name"));
+    }
+
+    function shuffleArray(arr) {
+      const a = arr.slice();
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        const t = a[i]; a[i] = a[j]; a[j] = t;
+      }
+      return a;
+    }
+
+    function splitTeams() {
+      const names = getSelectedNames();
+      if (names.length !== 10) {
+        return showMessage("יש לבחור בדיוק 10 שחקנים", false);
+      }
+      selectedTeamPlayers = names;
+      renderTeamsResult(shuffleArray(selectedTeamPlayers));
+    }
+
+    function reshuffleTeams() {
+      if (selectedTeamPlayers.length !== 10) return;
+      renderTeamsResult(shuffleArray(selectedTeamPlayers));
+    }
+
+    function renderTeamsResult(shuffled) {
+      const light = shuffled.slice(0, 5);
+      const dark = shuffled.slice(5, 10);
+      document.getElementById("teamLight").innerHTML = light.map(n => `<li>${n}</li>`).join("");
+      document.getElementById("teamDark").innerHTML = dark.map(n => `<li>${n}</li>`).join("");
+      document.getElementById("teamPickList").classList.add("hidden");
+      document.getElementById("btnSplitTeams").classList.add("hidden");
+      document.getElementById("teamPickCount").classList.add("hidden");
+      document.getElementById("teamsResult").classList.remove("hidden");
+    }
+
+    function backToTeamPick() {
+      document.getElementById("teamsResult").classList.add("hidden");
+      document.getElementById("teamPickList").classList.remove("hidden");
+      document.getElementById("btnSplitTeams").classList.remove("hidden");
+      document.getElementById("teamPickCount").classList.remove("hidden");
+      updateTeamPickCount();
     }
 
     function ensureAdminUI() {
