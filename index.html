@@ -45,6 +45,7 @@
       gap: 8px;
       margin-top: 3px;
       font-size: 0.72rem;
+      flex-wrap: wrap;
     }
     .user-bar button {
       background: transparent;
@@ -57,6 +58,13 @@
       cursor: pointer;
     }
     .gear-btn { border: none; font-size: 1rem; padding: 0 4px; line-height: 1; }
+    .balance-pill {
+      background: rgba(255,255,255,0.18);
+      border-radius: 20px;
+      padding: 1px 8px;
+      font-weight: 600;
+    }
+    .balance-pill.debt { background: rgba(220,38,38,0.35); }
     .container { padding: 8px; max-width: 480px; margin: 0 auto; }
 
     .card {
@@ -192,6 +200,7 @@
       width: auto; padding: 6px 10px; font-size: 0.8rem; border-radius: 8px;
     }
     .pending-item .actions { display: flex; gap: 6px; margin-top: 6px; }
+    .debt-amount { font-size: 1.6rem; font-weight: 700; color: var(--danger); text-align: center; margin: 8px 0 12px; }
 
     .spinner {
       width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.35);
@@ -236,6 +245,7 @@
       <div class="game-info" id="gameInfo">טוען...</div>
       <div class="user-bar">
         <span id="userName"></span>
+        <span id="userBalance" class="balance-pill hidden"></span>
         <button class="gear-btn hidden" id="btnGear" onclick="openAdminModal()" title="ניהול">⚙️</button>
         <button onclick="logout()">יציאה</button>
       </div>
@@ -304,11 +314,34 @@
     </div>
   </div>
 
+  <div id="debtModal" class="modal-overlay hidden" onclick="backdropClose(event,'debtModal')">
+    <div class="modal">
+      <div class="modal-head">
+        <h3>יש לך חוב</h3>
+        <button class="modal-close" onclick="closeDebtModal()">סגור</button>
+      </div>
+      <p class="status-text">היתרה שלך כרגע:</p>
+      <div class="debt-amount" id="debtAmountText">0₪</div>
+      <p class="status-text" id="debtBlockHint" style="margin-bottom:12px;"></p>
+      <div class="pay-row">
+        <button class="pay-btn" onclick="openBit()">
+          <img src="https://is1-ssl.mzstatic.com/image/thumb/PurpleSource221/v4/92/ae/b1/92aeb103-d961-c3e5-9bb5-16a4cfe65b2f/Placeholder.mill/200x200bb-75.webp" alt="Bit">
+          <span>Bit</span>
+        </button>
+        <button class="pay-btn" onclick="openPayBox()">
+          <img src="https://is1-ssl.mzstatic.com/image/thumb/PurpleSource211/v4/12/06/b0/1206b081-574f-ac46-551d-ba5c4378cecd/Placeholder.mill/200x200bb-75.webp" alt="PayBox">
+          <span>PayBox</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
   <div id="adminHost"></div>
 
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbwLLDUx9vqT-gEsb53pSM4ZqAnOkE7O_lSQdz9MirLysPQv8eANtJ-MK4djkG4uv_Bm/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbwhkXrFfHENfI0Os_UpmUcAD98_98zDVnB25ktl5coJDk57KGqdqXggMbPB-vJMwsEr/exec";
     const STORAGE_KEY = "basket_session_v1";
+    const DEBT_POPUP_KEY = "basket_debt_popup_shown";
     const AUTO_REFRESH_MS = 40000;
 
     let sessionToken = localStorage.getItem(STORAGE_KEY) || "";
@@ -321,6 +354,7 @@
     let googleInitDone = false;
     let autoRefreshTimer = null;
     let adminUiReady = false;
+    let maxDebt = 70;
 
     async function apiCall(action, params = {}) {
       const url = new URL(API_URL);
@@ -364,6 +398,48 @@
       el.className = "message " + (ok ? "success" : "error");
       el.classList.remove("hidden");
       setTimeout(() => el.classList.add("hidden"), 4000);
+    }
+
+    function formatBalance(bal) {
+      if (bal === null || bal === undefined || isNaN(bal)) return null;
+      const n = Number(bal);
+      const sign = n > 0 ? "+" : "";
+      return sign + n + "₪";
+    }
+
+    function updateBalanceUI() {
+      const el = document.getElementById("userBalance");
+      if (!currentUser || currentUser.balance === null || currentUser.balance === undefined) {
+        el.classList.add("hidden");
+        return;
+      }
+      const text = formatBalance(currentUser.balance);
+      el.textContent = text;
+      el.classList.remove("hidden");
+      if (Number(currentUser.balance) < 0) el.classList.add("debt");
+      else el.classList.remove("debt");
+    }
+
+    function maybeShowDebtPopup() {
+      if (!currentUser) return;
+      if (currentUser.balance === null || currentUser.balance === undefined) return;
+      if (Number(currentUser.balance) >= 0) return;
+      if (sessionStorage.getItem(DEBT_POPUP_KEY) === currentUser.email) return;
+
+      const abs = Math.abs(Number(currentUser.balance));
+      document.getElementById("debtAmountText").textContent = "-" + abs + "₪";
+      const hint = document.getElementById("debtBlockHint");
+      if (currentUser.blocked) {
+        hint.textContent = "ההרשמה חסומה עד להסדרת חוב מעל " + (currentUser.max_debt || maxDebt) + "₪.";
+      } else {
+        hint.textContent = "אפשר להירשם, אך מומלץ להסדיר את החוב.";
+      }
+      document.getElementById("debtModal").classList.remove("hidden");
+      sessionStorage.setItem(DEBT_POPUP_KEY, currentUser.email);
+    }
+
+    function closeDebtModal() {
+      document.getElementById("debtModal").classList.add("hidden");
     }
 
     function showPromoteWhatsApp(promoted) {
@@ -415,10 +491,17 @@
       adminUiReady = true;
     }
 
-    function showApp() {
+    function applyUserFromServer(user) {
+      currentUser = user;
+      if (user.max_debt !== undefined && user.max_debt !== null) maxDebt = Number(user.max_debt);
+      updateBalanceUI();
+    }
+
+    function showApp(fromFreshLogin) {
       document.getElementById("loginScreen").classList.add("hidden");
       document.getElementById("appScreen").classList.remove("hidden");
       document.getElementById("userName").textContent = currentUser.name;
+      updateBalanceUI();
       if (currentUser.isAdmin) {
         document.getElementById("btnGear").classList.remove("hidden");
         ensureAdminUI();
@@ -429,6 +512,7 @@
       }
       refreshAll();
       startAutoRefresh();
+      if (fromFreshLogin) maybeShowDebtPopup();
     }
 
     function showLogin() {
@@ -443,6 +527,7 @@
     }
 
     function logout() {
+      sessionStorage.removeItem(DEBT_POPUP_KEY);
       showLogin();
       initGoogleButton();
     }
@@ -475,13 +560,14 @@
         googleClientId = cfg.google_client_id || "";
         bitLink = cfg.bit_link || "";
         payboxLink = cfg.paybox_link || "";
+        if (cfg.max_debt) maxDebt = Number(cfg.max_debt);
       } catch (e) { console.error(e); }
 
       if (sessionToken) {
         const res = await apiCall("validateSession", { token: sessionToken });
         if (res.success && res.user) {
-          currentUser = res.user;
-          showApp();
+          applyUserFromServer(res.user);
+          showApp(false);
           return;
         }
       }
@@ -516,9 +602,9 @@
         const res = await apiCall("verifyGoogleToken", { idToken: response.credential });
         if (!res.success) return showLoginMessage(res.message || "התחברות Google נכשלה", false);
         sessionToken = res.token;
-        currentUser = res.user;
         localStorage.setItem(STORAGE_KEY, sessionToken);
-        showApp();
+        applyUserFromServer(res.user);
+        showApp(true);
       } catch (e) {
         showLoginMessage("שגיאה בהתחברות Google", false);
       }
@@ -556,9 +642,9 @@
           return;
         }
         sessionToken = res.token;
-        currentUser = res.user;
         localStorage.setItem(STORAGE_KEY, sessionToken);
-        showApp();
+        applyUserFromServer(res.user);
+        showApp(true);
       } catch (e) {
         showLoginMessage("שגיאה באימות", false);
         setLoading(btn, false, "אימות והתחברות");
@@ -621,8 +707,11 @@
         document.getElementById("freeSpots").textContent =
           `פנויים: ${data.freeSpots} / ${data.maxPlayers}`;
 
-        if (data.friendRegistrationOpen) document.getElementById("btnFriend").classList.remove("hidden");
-        else document.getElementById("btnFriend").classList.add("hidden");
+        if (data.friendRegistrationOpen && !(currentUser && currentUser.blocked)) {
+          document.getElementById("btnFriend").classList.remove("hidden");
+        } else {
+          document.getElementById("btnFriend").classList.add("hidden");
+        }
 
         updateRegButtonState();
       } catch (e) {
@@ -662,6 +751,11 @@
         btn.textContent = "סגור";
         return;
       }
+      if (currentUser && currentUser.blocked) {
+        btn.disabled = true;
+        btn.textContent = "חסום (חוב)";
+        return;
+      }
       if (isSelfRegistered()) {
         btn.disabled = true;
         btn.textContent = "✓ רשום";
@@ -692,6 +786,7 @@
     async function doRegisterSelf() {
       if (!sessionToken) return showMessage("יש להתחבר", false);
       if (lastListData && lastListData.isLocked) return showMessage("ההרשמה נסגרה", false);
+      if (currentUser && currentUser.blocked) return showMessage("יש חוב גבוה – ההרשמה חסומה", false);
       const btn = document.getElementById("btnRegSelf");
       setLoading(btn, true);
       try {
@@ -700,13 +795,14 @@
         if (res.success) await refreshAll();
       } catch (e) { showMessage("שגיאה בהרשמה", false); }
       updateRegButtonState();
-      if (!isSelfRegistered() && !(lastListData && lastListData.isLocked)) {
+      if (!isSelfRegistered() && !(lastListData && lastListData.isLocked) && !(currentUser && currentUser.blocked)) {
         setLoading(btn, false, "+ הרשמה");
       }
     }
 
     function openFriendModal() {
       if (lastListData && lastListData.isLocked) return showMessage("ההרשמה נסגרה", false);
+      if (currentUser && currentUser.blocked) return showMessage("יש חוב גבוה – ההרשמה חסומה", false);
       document.getElementById("friendName").value = "";
       document.getElementById("friendModal").classList.remove("hidden");
     }
@@ -716,6 +812,7 @@
 
     async function doRegisterFriend() {
       if (lastListData && lastListData.isLocked) return showMessage("ההרשמה נסגרה", false);
+      if (currentUser && currentUser.blocked) return showMessage("יש חוב גבוה – ההרשמה חסומה", false);
       const friendName = document.getElementById("friendName").value.trim();
       if (!friendName) return showMessage("נא להזין שם חבר", false);
       const btn = document.getElementById("btnRegFriend");
