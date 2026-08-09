@@ -57,7 +57,7 @@
       width: auto;
       cursor: pointer;
     }
-    .gear-btn { border: none; font-size: 1rem; padding: 0 4px; line-height: 1; }
+    .gear-btn, .rules-btn { border: none; font-size: 1rem; padding: 0 4px; line-height: 1; }
     .balance-pill {
       background: rgba(255,255,255,0.18);
       border-radius: 20px;
@@ -94,7 +94,7 @@
       display: inline-flex; align-items: center; justify-content: center; padding: 0; flex-shrink: 0;
       font-size: 0.95rem;
     }
-    .btn-icon-copy svg, .btn-icon-teams svg { width: 15px; height: 15px; }
+    .btn-icon-copy svg { width: 15px; height: 15px; }
 
     .btn-sm {
       width: auto; padding: 5px 8px; font-size: 0.74rem; border-radius: 7px;
@@ -111,6 +111,7 @@
       display: flex; align-items: center; position: relative;
       padding: 3px 6px 3px 34px; font-size: 0.8rem; min-height: 28px;
       border-bottom: 1px solid #eef2f7; gap: 6px;
+      animation: fadeIn 0.25s ease;
     }
     .list-item:last-child { border-bottom: none; }
     .list-item .num {
@@ -165,10 +166,12 @@
     .hidden { display: none !important; }
     .status-text { text-align: center; font-size: 0.78rem; color: var(--muted); margin-top: 6px; }
     .form-group { margin-bottom: 8px; }
-    input, select {
+    input, select, textarea {
       width: 100%; padding: 11px 12px; font-size: 0.92rem;
       border: 1.5px solid var(--border); border-radius: 10px; background: #fff;
+      font-family: inherit;
     }
+    textarea { min-height: 100px; resize: vertical; }
     .promote-card { border: 1.5px solid #16a34a; }
     .promote-card h3 { color: #166534; font-size: 0.86rem; margin-bottom: 4px; }
 
@@ -209,6 +212,9 @@
       text-align: center; margin: 8px 0 12px;
       direction: ltr; unicode-bidi: isolate;
     }
+    .rules-body, .announce-body {
+      white-space: pre-wrap; font-size: 0.9rem; line-height: 1.5; color: var(--text);
+    }
 
     .team-pick-item {
       display: flex; align-items: center; gap: 10px;
@@ -217,15 +223,51 @@
     .team-pick-item input { width: auto; accent-color: var(--primary); }
     .team-count { text-align: center; font-size: 0.85rem; color: var(--muted); margin: 8px 0; }
     .teams-result { display: flex; gap: 10px; margin-top: 12px; }
-    .team-box {
-      flex: 1; border-radius: 12px; padding: 10px; min-height: 120px;
-    }
+    .team-box { flex: 1; border-radius: 12px; padding: 10px; min-height: 120px; }
     .team-light { background: #f8fafc; border: 1.5px solid #cbd5e1; }
     .team-dark { background: #1e293b; border: 1.5px solid #0f172a; color: #f8fafc; }
     .team-box h4 { font-size: 0.9rem; margin-bottom: 8px; text-align: center; }
     .team-box ol { padding-right: 18px; font-size: 0.85rem; line-height: 1.6; }
     .teams-actions { display: flex; gap: 8px; margin-top: 12px; }
     .teams-actions button { flex: 1; }
+
+    /* Skeleton */
+    .skeleton-item {
+      height: 28px; margin: 4px 0; border-radius: 6px;
+      background: linear-gradient(90deg, #eef2f7 25%, #e2e8f0 50%, #eef2f7 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.2s infinite;
+    }
+    @keyframes shimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Success overlay */
+    .success-overlay {
+      position: fixed; inset: 0; z-index: 200;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(15,23,42,0.25);
+      pointer-events: none;
+      animation: fadeIn 0.15s ease;
+    }
+    .success-overlay .check {
+      width: 72px; height: 72px; border-radius: 50%;
+      background: var(--success); color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2.2rem; font-weight: 700;
+      box-shadow: 0 8px 24px rgba(22,163,74,0.35);
+      animation: pop 0.35s ease;
+    }
+    @keyframes pop {
+      0% { transform: scale(0.6); opacity: 0; }
+      70% { transform: scale(1.08); }
+      100% { transform: scale(1); opacity: 1; }
+    }
 
     .spinner {
       width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.35);
@@ -271,6 +313,7 @@
       <div class="user-bar">
         <span id="userName"></span>
         <span id="userBalance" class="balance-pill hidden"></span>
+        <button class="rules-btn" onclick="openRulesModal()" title="חוקים">❓</button>
         <button class="gear-btn hidden" id="btnGear" onclick="openAdminModal()" title="ניהול">⚙️</button>
         <button onclick="logout()">יציאה</button>
       </div>
@@ -303,13 +346,13 @@
             <button class="btn-sm btn-friend hidden" id="btnFriend" onclick="openFriendModal()">+ חבר</button>
           </div>
         </div>
-        <div class="list" id="mainList"><div class="empty">טוען...</div></div>
+        <div class="list" id="mainList"></div>
         <div class="free-spots" id="freeSpots"></div>
       </div>
 
       <div class="card">
         <div class="card-head"><h3>רשימת המתנה</h3></div>
-        <div class="list" id="waitlist"><div class="empty">טוען...</div></div>
+        <div class="list" id="waitlist"></div>
       </div>
 
       <div class="card">
@@ -362,6 +405,26 @@
     </div>
   </div>
 
+  <div id="announceModal" class="modal-overlay hidden" onclick="backdropClose(event,'announceModal')">
+    <div class="modal">
+      <div class="modal-head">
+        <h3>מודעה</h3>
+        <button class="modal-close" onclick="closeAnnounceModal()">סגור</button>
+      </div>
+      <div class="announce-body" id="announceBody"></div>
+    </div>
+  </div>
+
+  <div id="rulesModal" class="modal-overlay hidden" onclick="backdropClose(event,'rulesModal')">
+    <div class="modal">
+      <div class="modal-head">
+        <h3>חוקי הקבוצה</h3>
+        <button class="modal-close" onclick="closeRulesModal()">סגור</button>
+      </div>
+      <div class="rules-body" id="rulesBody">אין חוקים מוגדרים עדיין.</div>
+    </div>
+  </div>
+
   <div id="teamsModal" class="modal-overlay hidden" onclick="backdropClose(event,'teamsModal')">
     <div class="modal">
       <div class="modal-head">
@@ -392,10 +455,12 @@
   </div>
 
   <div id="adminHost"></div>
+  <div id="successHost"></div>
 
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbwhkXrFfHENfI0Os_UpmUcAD98_98zDVnB25ktl5coJDk57KGqdqXggMbPB-vJMwsEr/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbwZTwXQP7DUUAhIg1uovqhMtogE7OJV9Y1yhRxQJDvtP5kOJg4QeUyggLxVJ2lcaays/exec";
     const STORAGE_KEY = "basket_session_v1";
+    const ANNOUNCE_KEY = "basket_announce_seen";
     const AUTO_REFRESH_MS = 40000;
 
     let sessionToken = localStorage.getItem(STORAGE_KEY) || "";
@@ -409,6 +474,7 @@
     let autoRefreshTimer = null;
     let adminUiReady = false;
     let maxDebt = 70;
+    let rulesText = "";
     let selectedTeamPlayers = [];
 
     async function apiCall(action, params = {}) {
@@ -455,6 +521,16 @@
       setTimeout(() => el.classList.add("hidden"), 4000);
     }
 
+    function showSuccessAnimation() {
+      const host = document.getElementById("successHost");
+      host.innerHTML = `<div class="success-overlay"><div class="check">✓</div></div>`;
+      setTimeout(() => { host.innerHTML = ""; }, 900);
+    }
+
+    function skeletonHtml(n) {
+      return Array.from({ length: n }, () => `<div class="skeleton-item"></div>`).join("");
+    }
+
     function formatBalance(bal) {
       if (bal === null || bal === undefined || isNaN(Number(bal))) return null;
       const n = Number(bal);
@@ -493,6 +569,27 @@
       document.getElementById("debtModal").classList.add("hidden");
     }
 
+    function maybeShowAnnouncement(ann) {
+      if (!ann || !ann.text) return;
+      const key = ann.text + "|" + (ann.from || "") + "|" + (ann.to || "");
+      if (sessionStorage.getItem(ANNOUNCE_KEY) === key) return;
+      document.getElementById("announceBody").textContent = ann.text;
+      document.getElementById("announceModal").classList.remove("hidden");
+      sessionStorage.setItem(ANNOUNCE_KEY, key);
+    }
+
+    function closeAnnounceModal() {
+      document.getElementById("announceModal").classList.add("hidden");
+    }
+
+    function openRulesModal() {
+      document.getElementById("rulesBody").textContent = rulesText || "אין חוקים מוגדרים עדיין.";
+      document.getElementById("rulesModal").classList.remove("hidden");
+    }
+    function closeRulesModal() {
+      document.getElementById("rulesModal").classList.add("hidden");
+    }
+
     function showPromoteWhatsApp(promoted) {
       const box = document.getElementById("promoteBox");
       const wrap = document.getElementById("promoteButtons");
@@ -510,7 +607,7 @@
       box.classList.remove("hidden");
     }
 
-    // ----- Teams -----
+    // Teams
     function openTeamsModal() {
       if (!lastListData || lastListData.error || !lastListData.main || lastListData.main.length < 10) {
         return showMessage("צריך לפחות 10 שחקנים ברשימת המשחק", false);
@@ -519,18 +616,15 @@
       document.getElementById("teamsResult").classList.add("hidden");
       document.getElementById("btnSplitTeams").classList.remove("hidden");
       document.getElementById("teamPickList").classList.remove("hidden");
+      document.getElementById("teamPickCount").classList.remove("hidden");
       renderTeamPickList();
       document.getElementById("teamsModal").classList.remove("hidden");
     }
-
-    function closeTeamsModal() {
-      document.getElementById("teamsModal").classList.add("hidden");
-    }
+    function closeTeamsModal() { document.getElementById("teamsModal").classList.add("hidden"); }
 
     function renderTeamPickList() {
       const list = lastListData.main || [];
-      const wrap = document.getElementById("teamPickList");
-      wrap.innerHTML = list.map((r, idx) => `
+      document.getElementById("teamPickList").innerHTML = list.map((r, idx) => `
         <label class="team-pick-item">
           <input type="checkbox" value="${idx}" data-name="${escapeHtml(r.display)}" onchange="onTeamPickChange()">
           <span>${r.position}. ${escapeHtml(r.display)}</span>
@@ -538,7 +632,6 @@
       `).join("");
       updateTeamPickCount();
     }
-
     function onTeamPickChange() {
       const boxes = document.querySelectorAll("#teamPickList input[type=checkbox]");
       const checked = [...boxes].filter(b => b.checked);
@@ -548,17 +641,14 @@
       }
       updateTeamPickCount();
     }
-
     function updateTeamPickCount() {
       const n = document.querySelectorAll("#teamPickList input[type=checkbox]:checked").length;
       document.getElementById("teamPickCount").textContent = "נבחרו: " + n + " / 10";
     }
-
     function getSelectedNames() {
       return [...document.querySelectorAll("#teamPickList input[type=checkbox]:checked")]
         .map(b => b.getAttribute("data-name"));
     }
-
     function shuffleArray(arr) {
       const a = arr.slice();
       for (let i = a.length - 1; i > 0; i--) {
@@ -567,32 +657,24 @@
       }
       return a;
     }
-
     function splitTeams() {
       const names = getSelectedNames();
-      if (names.length !== 10) {
-        return showMessage("יש לבחור בדיוק 10 שחקנים", false);
-      }
+      if (names.length !== 10) return showMessage("יש לבחור בדיוק 10 שחקנים", false);
       selectedTeamPlayers = names;
       renderTeamsResult(shuffleArray(selectedTeamPlayers));
     }
-
     function reshuffleTeams() {
       if (selectedTeamPlayers.length !== 10) return;
       renderTeamsResult(shuffleArray(selectedTeamPlayers));
     }
-
     function renderTeamsResult(shuffled) {
-      const light = shuffled.slice(0, 5);
-      const dark = shuffled.slice(5, 10);
-      document.getElementById("teamLight").innerHTML = light.map(n => `<li>${n}</li>`).join("");
-      document.getElementById("teamDark").innerHTML = dark.map(n => `<li>${n}</li>`).join("");
+      document.getElementById("teamLight").innerHTML = shuffled.slice(0, 5).map(n => `<li>${n}</li>`).join("");
+      document.getElementById("teamDark").innerHTML = shuffled.slice(5, 10).map(n => `<li>${n}</li>`).join("");
       document.getElementById("teamPickList").classList.add("hidden");
       document.getElementById("btnSplitTeams").classList.add("hidden");
       document.getElementById("teamPickCount").classList.add("hidden");
       document.getElementById("teamsResult").classList.remove("hidden");
     }
-
     function backToTeamPick() {
       document.getElementById("teamsResult").classList.add("hidden");
       document.getElementById("teamPickList").classList.remove("hidden");
@@ -611,6 +693,17 @@
               <button class="modal-close" onclick="closeAdminModal()">סגור</button>
             </div>
             <button class="btn-admin" id="btnNewWeek" onclick="doStartNewWeek()" style="margin-bottom:12px;">התחל שבוע חדש</button>
+
+            <h3 style="font-size:0.88rem;margin:10px 0 8px;color:#b45309;">מודעה</h3>
+            <div class="form-group"><textarea id="adminAnnounceText" placeholder="טקסט המודעה"></textarea></div>
+            <div class="form-group"><label style="font-size:0.8rem;color:#64748b;">מתאריך</label><input type="date" id="adminAnnounceFrom"></div>
+            <div class="form-group"><label style="font-size:0.8rem;color:#64748b;">עד תאריך</label><input type="date" id="adminAnnounceTo"></div>
+            <button class="btn-secondary" id="btnSaveAnnounce" onclick="saveAnnouncement()" style="margin-bottom:12px;">שמור מודעה</button>
+
+            <h3 style="font-size:0.88rem;margin:10px 0 8px;color:#b45309;">חוקי הקבוצה</h3>
+            <div class="form-group"><textarea id="adminRulesText" placeholder="חוקי הקבוצה"></textarea></div>
+            <button class="btn-secondary" id="btnSaveRules" onclick="saveRules()" style="margin-bottom:12px;">שמור חוקים</button>
+
             <h3 style="font-size:0.88rem;margin:10px 0 8px;color:#b45309;">בקשות הצטרפות</h3>
             <div id="pendingList"><div class="empty">טוען...</div></div>
             <button class="btn-gray" onclick="loadPending()" style="margin-top:8px;">רענן בקשות</button>
@@ -639,7 +732,7 @@
       updateBalanceUI();
     }
 
-    function showApp(showDebt) {
+    function showApp(showPopups) {
       document.getElementById("loginScreen").classList.add("hidden");
       document.getElementById("appScreen").classList.remove("hidden");
       document.getElementById("userName").textContent = currentUser.name;
@@ -652,9 +745,15 @@
         document.getElementById("adminHost").innerHTML = "";
         adminUiReady = false;
       }
-      refreshAll();
+      document.getElementById("mainList").innerHTML = skeletonHtml(8);
+      document.getElementById("waitlist").innerHTML = skeletonHtml(3);
+      refreshAll().then(() => {
+        if (showPopups) {
+          showDebtPopupIfNeeded();
+          if (lastListData && lastListData.announcement) maybeShowAnnouncement(lastListData.announcement);
+        }
+      });
       startAutoRefresh();
-      if (showDebt) showDebtPopupIfNeeded();
     }
 
     function showLogin() {
@@ -686,9 +785,12 @@
     async function manualRefresh() {
       const btn = document.getElementById("btnRefresh");
       setLoading(btn, true);
+      document.getElementById("mainList").innerHTML = skeletonHtml(8);
+      document.getElementById("waitlist").innerHTML = skeletonHtml(3);
       await refreshAll();
       setLoading(btn, false, "↻");
       showDebtPopupIfNeeded();
+      if (lastListData && lastListData.announcement) maybeShowAnnouncement(lastListData.announcement);
     }
 
     async function refreshAll(silent) {
@@ -703,6 +805,7 @@
         bitLink = cfg.bit_link || "";
         payboxLink = cfg.paybox_link || "";
         if (cfg.max_debt) maxDebt = Number(cfg.max_debt);
+        rulesText = cfg.rules_text || "";
       } catch (e) { console.error(e); }
 
       if (sessionToken) {
@@ -934,7 +1037,10 @@
       try {
         const res = await apiCall("registerSelf", { token: sessionToken });
         showMessage(res.message, res.success);
-        if (res.success) await refreshAll();
+        if (res.success) {
+          showSuccessAnimation();
+          await refreshAll();
+        }
       } catch (e) { showMessage("שגיאה בהרשמה", false); }
       updateRegButtonState();
       if (!isSelfRegistered() && !(lastListData && lastListData.isLocked) && !(currentUser && currentUser.blocked)) {
@@ -948,9 +1054,7 @@
       document.getElementById("friendName").value = "";
       document.getElementById("friendModal").classList.remove("hidden");
     }
-    function closeFriendModal() {
-      document.getElementById("friendModal").classList.add("hidden");
-    }
+    function closeFriendModal() { document.getElementById("friendModal").classList.add("hidden"); }
 
     async function doRegisterFriend() {
       if (lastListData && lastListData.isLocked) return showMessage("ההרשמה נסגרה", false);
@@ -963,6 +1067,7 @@
         const res = await apiCall("registerFriend", { token: sessionToken, friendName });
         showMessage(res.message, res.success);
         if (res.success) {
+          showSuccessAnimation();
           closeFriendModal();
           await refreshAll();
         }
@@ -978,6 +1083,7 @@
         const res = await apiCall("cancelRegistrations", { token: sessionToken, ids: id });
         showMessage(res.message, res.success);
         if (res.success) {
+          showSuccessAnimation();
           await refreshAll();
           showPromoteWhatsApp(res.promoted || []);
         }
@@ -990,6 +1096,7 @@
       if (!currentUser || !currentUser.isAdmin) return;
       ensureAdminUI();
       document.getElementById("adminModal").classList.remove("hidden");
+      loadAdminContent();
       loadMasterSelect();
       loadAdminList();
       loadPending();
@@ -1000,6 +1107,45 @@
     }
     function backdropClose(e, id) {
       if (e.target.id === id) document.getElementById(id).classList.add("hidden");
+    }
+
+    async function loadAdminContent() {
+      try {
+        const res = await apiCall("getAdminContent", { token: sessionToken });
+        if (!res.success) return;
+        document.getElementById("adminAnnounceText").value = res.announcement_text || "";
+        document.getElementById("adminAnnounceFrom").value = res.announcement_from || "";
+        document.getElementById("adminAnnounceTo").value = res.announcement_to || "";
+        document.getElementById("adminRulesText").value = res.rules_text || "";
+      } catch (e) {}
+    }
+
+    async function saveAnnouncement() {
+      const btn = document.getElementById("btnSaveAnnounce");
+      setLoading(btn, true);
+      try {
+        const res = await apiCall("saveAnnouncement", {
+          token: sessionToken,
+          text: document.getElementById("adminAnnounceText").value,
+          from: document.getElementById("adminAnnounceFrom").value,
+          to: document.getElementById("adminAnnounceTo").value
+        });
+        showMessage(res.message, res.success);
+        if (res.success) sessionStorage.removeItem(ANNOUNCE_KEY);
+      } catch (e) { showMessage("שגיאה", false); }
+      setLoading(btn, false, "שמור מודעה");
+    }
+
+    async function saveRules() {
+      const btn = document.getElementById("btnSaveRules");
+      setLoading(btn, true);
+      try {
+        const text = document.getElementById("adminRulesText").value;
+        const res = await apiCall("saveRules", { token: sessionToken, text });
+        showMessage(res.message, res.success);
+        if (res.success) rulesText = text;
+      } catch (e) { showMessage("שגיאה", false); }
+      setLoading(btn, false, "שמור חוקים");
     }
 
     async function doStartNewWeek() {
