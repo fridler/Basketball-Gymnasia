@@ -231,7 +231,6 @@
     .teams-actions { display: flex; gap: 8px; margin-top: 12px; }
     .teams-actions button { flex: 1; }
 
-    /* Skeleton */
     .skeleton-item {
       height: 28px; margin: 4px 0; border-radius: 6px;
       background: linear-gradient(90deg, #eef2f7 25%, #e2e8f0 50%, #eef2f7 75%);
@@ -247,7 +246,6 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* Success overlay */
     .success-overlay {
       position: fixed; inset: 0; z-index: 200;
       display: flex; align-items: center; justify-content: center;
@@ -458,7 +456,7 @@
   <div id="successHost"></div>
 
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbwZTwXQP7DUUAhIg1uovqhMtogE7OJV9Y1yhRxQJDvtP5kOJg4QeUyggLxVJ2lcaays/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbx8yTc5J0mzqGCZp_zqf6CyI3xva0HFwqbjyKb2PMUJbyk-JpgO6EJOQSnWlhUeLd7S/exec";
     const STORAGE_KEY = "basket_session_v1";
     const ANNOUNCE_KEY = "basket_announce_seen";
     const AUTO_REFRESH_MS = 40000;
@@ -476,6 +474,7 @@
     let maxDebt = 70;
     let rulesText = "";
     let selectedTeamPlayers = [];
+    let balanceLoaded = false;
 
     async function apiCall(action, params = {}) {
       const url = new URL(API_URL);
@@ -498,8 +497,10 @@
       if (!btn) return;
       if (loading) {
         btn.disabled = true;
-        btn.dataset.label = btn.dataset.label || btn.innerHTML;
-        btn.innerHTML = '<span class="spinner"></span>';
+        btn.dataset.label = btn.dataset.label || defaultText || btn.innerHTML;
+        btn.innerHTML = '<span class="spinner"></span> ' + (defaultText && defaultText.indexOf("מתחבר") !== -1 ? defaultText : "");
+        if (defaultText === "מתחבר...") btn.innerHTML = '<span class="spinner"></span> מתחבר...';
+        else if (!defaultText || defaultText === btn.dataset.label) btn.innerHTML = '<span class="spinner"></span>';
       } else {
         btn.disabled = false;
         btn.innerHTML = defaultText || btn.dataset.label || btn.innerHTML;
@@ -551,7 +552,7 @@
     }
 
     function showDebtPopupIfNeeded() {
-      if (!currentUser) return;
+      if (!balanceLoaded || !currentUser) return;
       if (currentUser.balance === null || currentUser.balance === undefined) return;
       if (Number(currentUser.balance) >= 0) return;
       const abs = Math.abs(Number(currentUser.balance));
@@ -567,6 +568,32 @@
 
     function closeDebtModal() {
       document.getElementById("debtModal").classList.add("hidden");
+    }
+
+    async function loadBalanceInBackground(showDebtPopup) {
+      if (!sessionToken) {
+        balanceLoaded = true;
+        updateRegButtonState();
+        return;
+      }
+      try {
+        const res = await apiCall("getMyBalance", { token: sessionToken });
+        if (res.success && currentUser) {
+          currentUser.balance = res.balance;
+          currentUser.blocked = !!res.blocked;
+          if (res.max_debt !== undefined && res.max_debt !== null) {
+            currentUser.max_debt = res.max_debt;
+            maxDebt = Number(res.max_debt);
+          }
+          updateBalanceUI();
+        }
+      } catch (e) {
+        console.error(e);
+      } finally {
+        balanceLoaded = true;
+        updateRegButtonState();
+        if (showDebtPopup) showDebtPopupIfNeeded();
+      }
     }
 
     function maybeShowAnnouncement(ann) {
@@ -607,7 +634,6 @@
       box.classList.remove("hidden");
     }
 
-    // Teams
     function openTeamsModal() {
       if (!lastListData || lastListData.error || !lastListData.main || lastListData.main.length < 10) {
         return showMessage("צריך לפחות 10 שחקנים ברשימת המשחק", false);
@@ -737,6 +763,7 @@
       document.getElementById("appScreen").classList.remove("hidden");
       document.getElementById("userName").textContent = currentUser.name;
       updateBalanceUI();
+
       if (currentUser.isAdmin) {
         document.getElementById("btnGear").classList.remove("hidden");
         ensureAdminUI();
@@ -745,14 +772,18 @@
         document.getElementById("adminHost").innerHTML = "";
         adminUiReady = false;
       }
+
+      balanceLoaded = false;
       document.getElementById("mainList").innerHTML = skeletonHtml(8);
       document.getElementById("waitlist").innerHTML = skeletonHtml(3);
+      updateRegButtonState();
+
       refreshAll().then(() => {
-        if (showPopups) {
-          showDebtPopupIfNeeded();
-          if (lastListData && lastListData.announcement) maybeShowAnnouncement(lastListData.announcement);
+        if (showPopups && lastListData && lastListData.announcement) {
+          maybeShowAnnouncement(lastListData.announcement);
         }
       });
+      loadBalanceInBackground(!!showPopups);
       startAutoRefresh();
     }
 
@@ -764,6 +795,7 @@
       adminUiReady = false;
       currentUser = null;
       sessionToken = "";
+      balanceLoaded = false;
       localStorage.removeItem(STORAGE_KEY);
     }
 
@@ -788,8 +820,8 @@
       document.getElementById("mainList").innerHTML = skeletonHtml(8);
       document.getElementById("waitlist").innerHTML = skeletonHtml(3);
       await refreshAll();
+      await loadBalanceInBackground(true);
       setLoading(btn, false, "↻");
-      showDebtPopupIfNeeded();
       if (lastListData && lastListData.announcement) maybeShowAnnouncement(lastListData.announcement);
     }
 
@@ -800,21 +832,26 @@
 
     async function bootstrap() {
       try {
-        const cfg = await apiCall("getConfig");
+        const cfgPromise = apiCall("getConfig").catch(() => ({}));
+        const sessionPromise = sessionToken
+          ? apiCall("validateSession", { token: sessionToken })
+          : Promise.resolve(null);
+
+        const [cfg, sessionRes] = await Promise.all([cfgPromise, sessionPromise]);
+
         googleClientId = cfg.google_client_id || "";
         bitLink = cfg.bit_link || "";
         payboxLink = cfg.paybox_link || "";
         if (cfg.max_debt) maxDebt = Number(cfg.max_debt);
         rulesText = cfg.rules_text || "";
-      } catch (e) { console.error(e); }
 
-      if (sessionToken) {
-        const res = await apiCall("validateSession", { token: sessionToken });
-        if (res.success && res.user) {
-          applyUserFromServer(res.user);
+        if (sessionRes && sessionRes.success && sessionRes.user) {
+          applyUserFromServer(sessionRes.user);
           showApp(true);
           return;
         }
+      } catch (e) {
+        console.error(e);
       }
       showLogin();
       initGoogleButton();
@@ -878,12 +915,14 @@
       const code = document.getElementById("loginCode").value.trim();
       if (!code) return showLoginMessage("נא להזין קוד", false);
       const btn = document.getElementById("btnVerifyCode");
-      setLoading(btn, true);
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span> מתחבר...';
       try {
         const res = await apiCall("verifyLoginCode", { email, code });
         if (!res.success) {
           showLoginMessage(res.message || "קוד שגוי", false);
-          setLoading(btn, false, "אימות והתחברות");
+          btn.disabled = false;
+          btn.innerHTML = "אימות והתחברות";
           return;
         }
         sessionToken = res.token;
@@ -892,7 +931,8 @@
         showApp(true);
       } catch (e) {
         showLoginMessage("שגיאה באימות", false);
-        setLoading(btn, false, "אימות והתחברות");
+        btn.disabled = false;
+        btn.innerHTML = "אימות והתחברות";
       }
     }
 
@@ -952,12 +992,6 @@
         document.getElementById("freeSpots").textContent =
           `פנויים: ${data.freeSpots} / ${data.maxPlayers}`;
 
-        if (data.friendRegistrationOpen && !(currentUser && currentUser.blocked)) {
-          document.getElementById("btnFriend").classList.remove("hidden");
-        } else {
-          document.getElementById("btnFriend").classList.add("hidden");
-        }
-
         updateRegButtonState();
       } catch (e) {
         console.error(e);
@@ -990,17 +1024,36 @@
 
     function updateRegButtonState() {
       const btn = document.getElementById("btnRegSelf");
+      const btnFriend = document.getElementById("btnFriend");
       if (!btn || !lastListData) return;
+
       if (lastListData.isLocked) {
         btn.disabled = true;
         btn.textContent = "סגור";
+        if (btnFriend) btnFriend.classList.add("hidden");
         return;
       }
+
+      if (!balanceLoaded) {
+        btn.disabled = true;
+        btn.textContent = "טוען...";
+        if (btnFriend) btnFriend.classList.add("hidden");
+        return;
+      }
+
       if (currentUser && currentUser.blocked) {
         btn.disabled = true;
         btn.textContent = "חסום (חוב)";
+        if (btnFriend) btnFriend.classList.add("hidden");
         return;
       }
+
+      if (lastListData.friendRegistrationOpen) {
+        if (btnFriend) btnFriend.classList.remove("hidden");
+      } else {
+        if (btnFriend) btnFriend.classList.add("hidden");
+      }
+
       if (isSelfRegistered()) {
         btn.disabled = true;
         btn.textContent = "✓ רשום";
@@ -1030,6 +1083,7 @@
 
     async function doRegisterSelf() {
       if (!sessionToken) return showMessage("יש להתחבר", false);
+      if (!balanceLoaded) return showMessage("טוען נתונים, נסה שוב בעוד רגע", false);
       if (lastListData && lastListData.isLocked) return showMessage("ההרשמה נסגרה", false);
       if (currentUser && currentUser.blocked) return showMessage("יש חוב גבוה – ההרשמה חסומה", false);
       const btn = document.getElementById("btnRegSelf");
@@ -1043,12 +1097,13 @@
         }
       } catch (e) { showMessage("שגיאה בהרשמה", false); }
       updateRegButtonState();
-      if (!isSelfRegistered() && !(lastListData && lastListData.isLocked) && !(currentUser && currentUser.blocked)) {
+      if (!isSelfRegistered() && !(lastListData && lastListData.isLocked) && !(currentUser && currentUser.blocked) && balanceLoaded) {
         setLoading(btn, false, "+ הרשמה");
       }
     }
 
     function openFriendModal() {
+      if (!balanceLoaded) return showMessage("טוען נתונים, נסה שוב בעוד רגע", false);
       if (lastListData && lastListData.isLocked) return showMessage("ההרשמה נסגרה", false);
       if (currentUser && currentUser.blocked) return showMessage("יש חוב גבוה – ההרשמה חסומה", false);
       document.getElementById("friendName").value = "";
@@ -1057,6 +1112,7 @@
     function closeFriendModal() { document.getElementById("friendModal").classList.add("hidden"); }
 
     async function doRegisterFriend() {
+      if (!balanceLoaded) return showMessage("טוען נתונים, נסה שוב בעוד רגע", false);
       if (lastListData && lastListData.isLocked) return showMessage("ההרשמה נסגרה", false);
       if (currentUser && currentUser.blocked) return showMessage("יש חוב גבוה – ההרשמה חסומה", false);
       const friendName = document.getElementById("friendName").value.trim();
